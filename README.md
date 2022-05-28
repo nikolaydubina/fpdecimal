@@ -6,7 +6,7 @@
 > Watchout arithmetic operaions or wrap into a struct. Linter is not ready yet. More details in Appendix D.
 
 > **Warning**  
-> Multiplication is only correct by untyped constants. Multiplication of two `fpdecimals` leads to loss due to increase in fractional points.
+> Multiplication is only correct by untyped constants. Multiplication of two `fpdecimal` leads to loss due to increase in fractional points.
 
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/fpdecimal.svg)](https://pkg.go.dev/github.com/nikolaydubina/fpdecimal)
