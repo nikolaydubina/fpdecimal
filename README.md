@@ -100,11 +100,11 @@ ok      github.com/nikolaydubina/fpdecimal    175.518s
 - [Fixed-Point Arithmetic Wiki](https://en.wikipedia.org/wiki/Fixed-point_arithmetic)
 - [shopspring/decimal](https://github.com/shopspring/decimal)
 
-### Appendix A: Comparison to other libraries
+## Appendix A: Comparison to other libraries
 
 - https://github.com/shopspring/decimal solves arbitrary precision, fpdecimal solves only simple small decimals
 
-### Appendix B: Benchmarking https://github.com/shopspring/decimal (2022-05-28)
+## Appendix B: Benchmarking https://github.com/shopspring/decimal (2022-05-28)
 ```
 $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
@@ -132,13 +132,13 @@ PASS
 ok      github.com/shopspring/decimal    123.541sa
 ```
 
-### Appendix C: Why this is good fit for money?
+## Appendix C: Why this is good fit for money?
 
 There are only ~200 currencies in the world.
 All currencies have at most 3 decimal digits, thus it is sufficient to handle 3 decimal fractions.
 Next, currencies without decimal digits are typically 1000x larger than dollar, but even then maximum number that fits into `int64` (without 3 decimal fractions) is `9 223 372 036 854 775.807` which is ~9 quadrillion. This should be enough for most operations with money.
 
-### Appendix D: Is it safe to use arithmetic operators in Go?
+## Appendix D: Is it safe to use arithmetic operators in Go?
 
 Sort of. Operations with defined types (variables) will fail.
 ```go
