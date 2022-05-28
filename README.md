@@ -2,26 +2,21 @@
 
 > _When you have small and simple float-like numbers. Precise and Fast. Perfect for money._
 
-> **Warning**  
-> Watchout arithmetic operaions or wrap into a struct. Linter is not ready yet. More details in Appendix D.
-
-> **Warning**  
-> Multiplication is only correct by untyped constants. Multiplication of two `fpdecimal` leads to loss due to increase in fractional points.
-
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/fpdecimal.svg)](https://pkg.go.dev/github.com/nikolaydubina/fpdecimal)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/fpdecimal)](https://goreportcard.com/report/github.com/nikolaydubina/fpdecimal)
 
-* 100LOC
+* ~100LOC
 * Fuzz tests
 * 100% coverage
 * JSON encoding/decoding
-* Arithmetic operators
 * As fast as integers (parsing, formatting, operations)
 * 3x faster parsing than float
 * 2x faster printing than float
 * 30x faster parsing than `fmt`
 * 20x faster than [shopspring/decimal](https://github.com/shopspring/decimal)
+* no overhead for arithmetic operations
+* no overhead for memory
 
 ```go
 var BuySP500Price = fpdecimal.FP3DecimalFromInt(9000)
@@ -37,8 +32,8 @@ if err := json.Unmarshal(input, &v); err != nil {
 }
 
 var amountToBuy fpdecimal.FP3Decimal
-if v.SP500 > BuySP500Price {
-    amountToBuy += v.SP500 * 2
+if v.SP500.HigherThan(BuySP500Price) {
+    amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
 }
 
 fmt.Println(amountToBuy)
@@ -51,6 +46,10 @@ Parsing and Printing is expensive operation and requires a lot of code.
 However, if you know that your numbers are always small and simple and you do not care or do not permit lots of fractions like `-1234.567`, then parsing and printing can be greatly simplified.
 Code is heavily influenced by hot-path from Go core `strconv` package.
 
+It is wrapped into struct to prevent bugs:
+- block multiplication by `fpdecimal` type, which leads to increase in decimal fractions and loose of precision
+- block additions of untyped constants, which leads to errors if you forget to scale by factor
+
 ### Benchmarks
 
 Parse
@@ -59,49 +58,57 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkFP3DecimalFromString/small-10                      827744476             7.13 ns/op           0 B/op           0 allocs/op
-BenchmarkFP3DecimalFromString/large-10                      276668296            21.79 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvAtoi/small-10                     1000000000             4.71 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvAtoi/large-10                      416969704            14.18 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvParseInt/small/int32-10            567803484            10.56 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvParseInt/small/int64-10            567515059            10.56 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvParseInt/large/int64-10            221833478            27.14 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/small/float32-10      349272979            17.34 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/small/float64-10      333610484            17.82 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/large/float32-10      129024007            46.45 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/large/float64-10      128212430            46.79 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_fmtSscanf/small-10                       20381784           293.4  ns/op          69 B/op           2 allocs/op
-BenchmarkParseFloat_fmtSscanf/large-10                        9484489           629.3  ns/op          88 B/op           3 allocs/op
+BenchmarkParse_FP3Decimal/small-10                             845515756             7.04 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_FP3Decimal/large-10                             278560885            21.43 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_Atoi/small-10                      1000000000             4.74 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_Atoi/large-10                       424242687            14.17 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/small/int32-10             566976321            10.65 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/small/int64-10             552894133            10.85 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/large/int64-10             219031276            27.56 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/small/float32-10       344793511            17.43 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/small/float64-10       335880535            17.82 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/large/float32-10       129427171            46.40 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/large/float64-10       128508513            46.75 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_fmt_Sscanf/small-10                        20424795           295.6  ns/op          69 B/op           2 allocs/op
+BenchmarkParse_float_fmt_Sscanf/large-10                         9479828           633.9  ns/op          88 B/op           3 allocs/op
 PASS
-ok      github.com/nikolaydubina/fpdecimal    175.518s
+ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
 
-Format
+Print
 ```
 $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkFP3Decimal_String/small-10                         161572239            37.1 ns/op          10 B/op           1 allocs/op
-BenchmarkFP3Decimal_String/large-10                          92706448            63.5 ns/op          48 B/op           2 allocs/op
-BenchmarkStringInt_strconvItoa/small-10                     729627100             8.3 ns/op           1 B/op           0 allocs/op
-BenchmarkStringInt_strconvItoa/large-10                     233921521            25.6 ns/op          16 B/op           1 allocs/op
-BenchmarkStringInt_strconvFormatInt/small-10                736678662             8.1 ns/op           1 B/op           0 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/small/float32-10     50491785           117.8 ns/op          31 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/small/float64-10     40790115           147.4 ns/op          31 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/large/float32-10     60102750            99.3 ns/op          48 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/large/float64-10     61115224            97.4 ns/op          48 B/op           2 allocs/op
-BenchmarkStringFloat_fmtSprintf/small-10                     43199199           138.2 ns/op          16 B/op           2 allocs/op
-BenchmarkStringFloat_fmtSprintf/large-10                     47292736           126.2 ns/op          28 B/op           2 allocs/op
+BenchmarkPrint_FP3Decimal/small-10                            164560935            36.44 ns/op          10 B/op           1 allocs/op
+BenchmarkPrint_FP3Decimal/large-10                             95584335            63.17 ns/op          48 B/op           2 allocs/op
+BenchmarkPrint_int_strconv_Itoa/small-10                      731089902             8.19 ns/op           1 B/op           0 allocs/op
+BenchmarkPrint_int_strconv_Itoa/large-10                      234441306            25.77 ns/op          16 B/op           1 allocs/op
+BenchmarkPrint_int_strconv_FormatInt/small-10                 728307549             8.26 ns/op           1 B/op           0 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float32-10      49801364           117.8  ns/op          31 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float64-10      40938864           148.3  ns/op          31 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float32-10      58160480            99.12 ns/op          48 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float64-10      61878582            97.22 ns/op          48 B/op           2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/small-10                      43542469           138.8  ns/op          16 B/op           2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/large-10                      47824404           125.7  ns/op          28 B/op           2 allocs/op
 PASS
-ok      github.com/nikolaydubina/fpdecimal    175.518s
+ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
 
-### Future Work
-
-- Adding wrapper into a struct to block arithmetic operations (+benchmarks encoding, method calls overhead, long chains of calls)
-- Separate repo to benchmark other open source versions (decimals) with same benchmark tests as in this repo (do not include other modules here just for benchmarking)
-- Linter to warn about using constants in expressions containing `fpdecimal` type.
+Arithmetics
+```
+$ go test -bench=. -benchtime=5s -benchmem ./...
+goos: darwin
+goarch: arm64
+pkg: github.com/nikolaydubina/fpdecimal
+BenchmarkArithmetic_FP3Decimal/add_x1-10           1000000000             0.31 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic_FP3Decimal/add_x100-10          181966545            32.75 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic_int64/add_x1-10                1000000000             0.31 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic_int64/add_x100-10               182298925            32.99 ns/op           0 B/op           0 allocs/op
+PASS
+ok      github.com/nikolaydubina/fpdecimal    194.558s
+```
 
 ### References
 
@@ -151,6 +158,8 @@ Next, currencies without decimal digits are typically 1000x larger than dollar, 
 ## Appendix D: Is it safe to use arithmetic operators in Go?
 
 Sort of... 
+
+In one of iterations, I did Type Alias, but it required some effort to use it carefully.
 
 Operations with defined types (variables) will fail.
 ```go

@@ -33,7 +33,7 @@ var testsInts = []struct {
 	},
 }
 
-func BenchmarkParseInt_strconvAtoi(b *testing.B) {
+func BenchmarkParse_int_strconv_Atoi(b *testing.B) {
 	var s int
 	var err error
 	for _, tc := range testsInts {
@@ -48,7 +48,7 @@ func BenchmarkParseInt_strconvAtoi(b *testing.B) {
 	}
 }
 
-func BenchmarkStringInt_strconvItoa(b *testing.B) {
+func BenchmarkPrint_int_strconv_Itoa(b *testing.B) {
 	var s string
 	for _, tc := range testsInts {
 		tests := make([]int, 0, len(tc.vals))
@@ -72,7 +72,7 @@ func BenchmarkStringInt_strconvItoa(b *testing.B) {
 	}
 }
 
-func BenchmarkParseInt_strconvParseInt(b *testing.B) {
+func BenchmarkParse_int_strconv_ParseInt(b *testing.B) {
 	var err error
 	for _, tc := range testsInts {
 		b.Run(tc.name, func(b *testing.B) {
@@ -102,7 +102,7 @@ func BenchmarkParseInt_strconvParseInt(b *testing.B) {
 	}
 }
 
-func BenchmarkStringInt_strconvFormatInt(b *testing.B) {
+func BenchmarkPrint_int_strconv_FormatInt(b *testing.B) {
 	var s string
 	for _, tc := range testsInts {
 		b.Run(tc.name, func(b *testing.B) {
@@ -130,7 +130,7 @@ func BenchmarkStringInt_strconvFormatInt(b *testing.B) {
 	}
 }
 
-func BenchmarkParseFloat_strconvParseFloat(b *testing.B) {
+func BenchmarkParse_float_strconv_ParseFloat(b *testing.B) {
 	var s float64
 	var err error
 	for _, tc := range testsFloats {
@@ -156,7 +156,7 @@ func BenchmarkParseFloat_strconvParseFloat(b *testing.B) {
 	}
 }
 
-func BenchmarkStringFloat_strconvFormatFloat(b *testing.B) {
+func BenchmarkPrint_float_strconv_FormatFloat(b *testing.B) {
 	var s string
 	for _, tc := range testsFloats {
 		b.Run(tc.name, func(b *testing.B) {
@@ -191,7 +191,7 @@ func BenchmarkStringFloat_strconvFormatFloat(b *testing.B) {
 	}
 }
 
-func BenchmarkParseFloat_fmtSscanf(b *testing.B) {
+func BenchmarkParse_float_fmt_Sscanf(b *testing.B) {
 	var s float32
 	var err error
 	for _, tc := range testsFloats {
@@ -206,7 +206,7 @@ func BenchmarkParseFloat_fmtSscanf(b *testing.B) {
 	}
 }
 
-func BenchmarkStringFloat_fmtSprintf(b *testing.B) {
+func BenchmarkPrint_float_fmt_Sprintf(b *testing.B) {
 	var s string
 	var err error
 	for _, tc := range testsFloats {
@@ -229,5 +229,32 @@ func BenchmarkStringFloat_fmtSprintf(b *testing.B) {
 				}
 			}
 		})
+	}
+}
+
+func BenchmarkArithmetic_int64(b *testing.B) {
+	var x int64 = 251231
+	var y int64 = 21231001
+
+	var s int64
+
+	b.Run("add_x1", func(b *testing.B) {
+		s = 0
+		for n := 0; n < b.N; n++ {
+			s = x + y
+		}
+	})
+
+	b.Run("add_x100", func(b *testing.B) {
+		s = 0
+		for n := 0; n < b.N; n++ {
+			for i := 0; i < 100; i++ {
+				s = x + y
+			}
+		}
+	})
+
+	if s == 0 {
+		b.Error()
 	}
 }
