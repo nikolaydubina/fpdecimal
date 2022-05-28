@@ -118,6 +118,7 @@ ok      github.com/nikolaydubina/fpdecimal    194.558s
 ## Appendix A: Comparison to other libraries
 
 - https://github.com/shopspring/decimal solves arbitrary precision, fpdecimal solves only simple small decimals
+- https://github.com/Rhymond/go-money solves typed number (currency), decodes through `interface{}` and float64, no precision in decoding, expects encoding to be in cents
 
 ## Appendix B: Benchmarking [shopspring/decimal](https://github.com/shopspring/decimal)
 
