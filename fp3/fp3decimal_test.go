@@ -1,4 +1,4 @@
-package fpdecimal_test
+package fp3_test
 
 import (
 	"encoding/json"
@@ -8,10 +8,10 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/nikolaydubina/fpdecimal"
+	"github.com/nikolaydubina/fpdecimal/fp3"
 )
 
-func FuzzFP3Decimal_ParseStringSameAsDecimal(f *testing.F) {
+func FuzzDecimal_ParseStringSameAsDecimal(f *testing.F) {
 	tests := []float32{
 		0,
 		0.100,
@@ -41,25 +41,25 @@ func FuzzFP3Decimal_ParseStringSameAsDecimal(f *testing.F) {
 
 		s := fmt.Sprintf("%.3f", r)
 
-		v, err := fpdecimal.FP3DecimalFromString(s)
+		v, err := fp3.FromString(s)
 		if err != nil {
 			t.Errorf(err.Error())
 		}
 
 		if s == "-0.000" || s == "0.000" || r == 0 || r == -0 {
 			if v.String() != "0" {
-				t.Errorf("s('0') != FP3Decimal.String(%#v) of fpdecimal(%#v) float32(%#v) .3f-float32(%#v)", v.String(), v, r, s)
+				t.Errorf("s('0') != Decimal.String(%#v) of fp3(%#v) float32(%#v) .3f-float32(%#v)", v.String(), v, r, s)
 			}
 			return
 		}
 
 		if s != v.String() {
-			t.Errorf("s(%#v) != FP3Decimal.String(%#v) of fpdecimal(%#v) float32(%#v)", s, v.String(), v, r)
+			t.Errorf("s(%#v) != Decimal.String(%#v) of fp3(%#v) float32(%#v)", s, v.String(), v, r)
 		}
 	})
 }
 
-func FuzzFP3Decimal_ParseStringRaw(f *testing.F) {
+func FuzzDecimal_ParseStringRaw(f *testing.F) {
 	tests := []string{
 		"123.456",
 		"0.123",
@@ -82,9 +82,9 @@ func FuzzFP3Decimal_ParseStringRaw(f *testing.F) {
 		f.Add("-" + tc)
 	}
 	f.Fuzz(func(t *testing.T, s string) {
-		v, err := fpdecimal.FP3DecimalFromString(s)
+		v, err := fp3.FromString(s)
 		if err != nil {
-			if v != fpdecimal.FP3DecimalZero {
+			if v != fp3.Zero {
 				t.Errorf("has to be 0 on error")
 			}
 			return
@@ -92,7 +92,7 @@ func FuzzFP3Decimal_ParseStringRaw(f *testing.F) {
 	})
 }
 
-func FuzzFP3Decimal_ToType(f *testing.F) {
+func FuzzDecimal_ToType(f *testing.F) {
 	tests := []float64{
 		0,
 		0.001,
@@ -104,7 +104,7 @@ func FuzzFP3Decimal_ToType(f *testing.F) {
 		f.Add(-tc)
 	}
 	f.Fuzz(func(t *testing.T, v float64) {
-		a := fpdecimal.FP3DecimalFromFloat(v)
+		a := fp3.FromFloat(v)
 
 		if float32(v) != a.Float32() {
 			t.Error(a, a.Float32(), float32(v))
@@ -143,14 +143,14 @@ var testsFloats = []struct {
 	},
 }
 
-func BenchmarkParse_FP3Decimal(b *testing.B) {
-	var s fpdecimal.FP3Decimal
+func BenchmarkParse_Decimal(b *testing.B) {
+	var s fp3.Decimal
 	var err error
 	for _, tc := range testsFloats {
 		b.Run(tc.name, func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
-				s, err = fpdecimal.FP3DecimalFromString(tc.vals[n%len(tc.vals)])
-				if err != nil || s == fpdecimal.FP3DecimalZero {
+				s, err = fp3.FromString(tc.vals[n%len(tc.vals)])
+				if err != nil || s == fp3.Zero {
 					b.Error(s, err)
 				}
 			}
@@ -158,12 +158,12 @@ func BenchmarkParse_FP3Decimal(b *testing.B) {
 	}
 }
 
-func BenchmarkPrint_FP3Decimal(b *testing.B) {
+func BenchmarkPrint_Decimal(b *testing.B) {
 	var s string
 	for _, tc := range testsFloats {
-		tests := make([]fpdecimal.FP3Decimal, 0, len(tc.vals))
+		tests := make([]fp3.Decimal, 0, len(tc.vals))
 		for _, q := range tc.vals {
-			v, err := fpdecimal.FP3DecimalFromString(q)
+			v, err := fp3.FromString(q)
 			if err != nil {
 				b.Error(err)
 			}
@@ -182,19 +182,19 @@ func BenchmarkPrint_FP3Decimal(b *testing.B) {
 	}
 }
 
-func TestFP3Decimal_UnmarshalJSON(t *testing.T) {
+func TestDecimal_UnmarshalJSON(t *testing.T) {
 	type MyType struct {
-		TeslaStockPrice fpdecimal.FP3Decimal `json:"tesla-stock-price"`
+		TeslaStockPrice fp3.Decimal `json:"tesla-stock-price"`
 	}
 
 	tests := []struct {
 		json string
-		v    fpdecimal.FP3Decimal
+		v    fp3.Decimal
 		s    string
 	}{
 		{
 			json: `{"tesla-stock-price": 9000.001}`,
-			v:    fpdecimal.FP3DecimalFromFloat(9000.001),
+			v:    fp3.FromFloat(9000.001),
 			s:    `9000.001`,
 		},
 	}
@@ -212,9 +212,9 @@ func TestFP3Decimal_UnmarshalJSON(t *testing.T) {
 	}
 }
 
-func FuzzFP3Decimal_UnmarshalJSON(f *testing.F) {
+func FuzzDecimal_UnmarshalJSON(f *testing.F) {
 	type MyType struct {
-		A fpdecimal.FP3Decimal `json:"a"`
+		A fp3.Decimal `json:"a"`
 	}
 
 	tests := []float32{
@@ -251,20 +251,20 @@ func FuzzFP3Decimal_UnmarshalJSON(f *testing.F) {
 	})
 }
 
-func ExampleFP3Decimal() {
-	var BuySP500Price = fpdecimal.FP3DecimalFromInt(9000)
+func ExampleDecimal() {
+	var BuySP500Price = fp3.FromInt(9000)
 
 	input := []byte(`{"sp500": 9000.023}`)
 
 	type Stocks struct {
-		SP500 fpdecimal.FP3Decimal `json:"sp500"`
+		SP500 fp3.Decimal `json:"sp500"`
 	}
 	var v Stocks
 	if err := json.Unmarshal(input, &v); err != nil {
 		log.Fatal(err)
 	}
 
-	var amountToBuy fpdecimal.FP3Decimal
+	var amountToBuy fp3.Decimal
 	if v.SP500.HigherThan(BuySP500Price) {
 		amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
 	}
@@ -273,7 +273,7 @@ func ExampleFP3Decimal() {
 	// Output: 18000.046
 }
 
-func FuzzFP3Decimal_AddSub(f *testing.F) {
+func FuzzDecimal_AddSub(f *testing.F) {
 	tests := [][2]float32{
 		{1, 2},
 		{1, -5},
@@ -284,14 +284,14 @@ func FuzzFP3Decimal_AddSub(f *testing.F) {
 		f.Add(tc[0], tc[1])
 	}
 	f.Fuzz(func(t *testing.T, a, b float32) {
-		fa := fpdecimal.FP3DecimalFromFloat(a)
-		fb := fpdecimal.FP3DecimalFromFloat(b)
+		fa := fp3.FromFloat(a)
+		fb := fp3.FromFloat(b)
 
 		if fa.Add(fb) != fb.Add(fa) {
 			t.Error(a, b)
 		}
 
-		if fpdecimal.FP3DecimalZero.Add(fa).Add(fb).Add(fa) != fpdecimal.FP3DecimalZero.Add(fb).Add(fa).Add(fa) {
+		if fp3.Zero.Add(fa).Add(fb).Add(fa) != fp3.Zero.Add(fb).Add(fa).Add(fa) {
 			t.Error(a, b)
 		}
 
@@ -299,14 +299,14 @@ func FuzzFP3Decimal_AddSub(f *testing.F) {
 			t.Error(a, b, v)
 		}
 
-		if fpdecimal.FP3DecimalZero.Add(fa).Sub(fa) != fpdecimal.FP3DecimalZero {
+		if fp3.Zero.Add(fa).Sub(fa) != fp3.Zero {
 			t.Error(a)
 		}
 
 	})
 }
 
-func FuzzFP3Decimal_AddSub_Int(f *testing.F) {
+func FuzzDecimal_AddSub_Int(f *testing.F) {
 	tests := [][2]int{
 		{1, 2},
 		{2, -5},
@@ -318,8 +318,8 @@ func FuzzFP3Decimal_AddSub_Int(f *testing.F) {
 		f.Add(tc[0], tc[1])
 	}
 	f.Fuzz(func(t *testing.T, a, b int) {
-		fa := fpdecimal.FP3DecimalFromInt(a)
-		fb := fpdecimal.FP3DecimalFromInt(b)
+		fa := fp3.FromInt(a)
+		fb := fp3.FromInt(b)
 
 		if a < b {
 			if !fa.LessThan(fb) {
@@ -341,21 +341,21 @@ func FuzzFP3Decimal_AddSub_Int(f *testing.F) {
 	})
 }
 
-func BenchmarkArithmetic_FP3Decimal(b *testing.B) {
-	x, _ := fpdecimal.FP3DecimalFromString("251.231")
-	y, _ := fpdecimal.FP3DecimalFromString("21231.001")
+func BenchmarkArithmetic_Decimal(b *testing.B) {
+	x, _ := fp3.FromString("251.231")
+	y, _ := fp3.FromString("21231.001")
 
-	var s fpdecimal.FP3Decimal
+	var s fp3.Decimal
 
 	b.Run("add_x1", func(b *testing.B) {
-		s = fpdecimal.FP3DecimalZero
+		s = fp3.Zero
 		for n := 0; n < b.N; n++ {
 			s = x.Add(y)
 		}
 	})
 
 	b.Run("add_x100", func(b *testing.B) {
-		s = fpdecimal.FP3DecimalZero
+		s = fp3.Zero
 		for n := 0; n < b.N; n++ {
 			for i := 0; i < 100; i++ {
 				s = x.Add(y)
@@ -363,13 +363,13 @@ func BenchmarkArithmetic_FP3Decimal(b *testing.B) {
 		}
 	})
 
-	if s == fpdecimal.FP3DecimalZero {
+	if s == fp3.Zero {
 		b.Error()
 	}
 }
 
-func TestFP3Decimal_memlayout(t *testing.T) {
-	a, _ := fpdecimal.FP3DecimalFromString("-1000.123")
+func TestDecimal_memlayout(t *testing.T) {
+	a, _ := fp3.FromString("-1000.123")
 	if v := unsafe.Sizeof(a); v != 8 {
 		t.Error(a, v)
 	}

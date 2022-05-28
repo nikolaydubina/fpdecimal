@@ -6,6 +6,33 @@ import (
 	"testing"
 )
 
+var testsFloats = []struct {
+	name string
+	vals []string
+}{
+	{
+		name: "small",
+		vals: []string{
+			"123.456",
+			"0.123",
+			"0.012",
+			"0.001",
+			"0.982",
+			"0.101",
+			"10",
+			"11",
+			"1",
+		},
+	},
+	{
+		name: "large",
+		vals: []string{
+			"123123123112312.1232",
+			"5341320482340234.123",
+		},
+	},
+}
+
 var testsInts = []struct {
 	name string
 	vals []string

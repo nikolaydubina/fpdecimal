@@ -22,19 +22,19 @@
 * blocking error-prone fixed-point operations
 
 ```go
-var BuySP500Price = fpdecimal.FP3DecimalFromInt(9000)
+var BuySP500Price = fp3.FromInt(9000)
 
 input := []byte(`{"sp500": 9000.023}`)
 
 type Stocks struct {
-    SP500 fpdecimal.FP3Decimal `json:"sp500"`
+    SP500 fp3.Decimal `json:"sp500"`
 }
 var v Stocks
 if err := json.Unmarshal(input, &v); err != nil {
     log.Fatal(err)
 }
 
-var amountToBuy fpdecimal.FP3Decimal
+var amountToBuy fp3.Decimal
 if v.SP500.HigherThan(BuySP500Price) {
     amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
 }
