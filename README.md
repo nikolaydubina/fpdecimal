@@ -1,4 +1,4 @@
-# 🐣 Fixed-Point Floats (3FPFloat)
+# 🐣 Fixed-Point Floats (FP3Float)
 
 > _When you have small and simple float-like numbers. Precise and Fast. Perfect for money._
 
