@@ -1,4 +1,4 @@
-# 🐣 Fixed-Point Floats (FP3Float)
+# 🐣 Small Fixed-Point Decimals (FP3Decimal)
 
 > _When you have small and simple float-like numbers. Precise and Fast. Perfect for money._
 
@@ -8,24 +8,24 @@
 * JSON encoding/decoding
 * Arithmetic operators
 * As fast as integers (parsing, formatting, operations)
-* 40x faster parsing than float
+* 90x faster parsing than float
 * 2x faster printing than float
 * 20x faster than [shopspring/decimal](https://github.com/shopspring/decimal)
 
 ```go
-var BuySP500Price = fpfloat.FP3FloatFromInt(9000)
+var BuySP500Price = fpdecimal.FP3DecimalFromInt(9000)
 
 input := []byte(`{"sp500": 9000.023}`)
 
 type Stocks struct {
-    SP500 fpfloat.FP3Float `json:"sp500"`
+    SP500 fpdecimal.FP3Decimal `json:"sp500"`
 }
 var v Stocks
 if err := json.Unmarshal(input, &v); err != nil {
     log.Fatal(err)
 }
 
-var amountToBuy fpfloat.FP3Float
+var amountToBuy fpdecimal.FP3Decimal
 if v.SP500 > BuySP500Price {
     amountToBuy += v.SP500 * 2
 }
@@ -44,53 +44,53 @@ Code is heavily influenced by hot-path from Go core `strconv` package.
 
 Parse
 ```
-nikolaydubina@Nikolays-MacBook-Pro fpfloat % go test -bench=. -benchtime=5s -benchmem ./...
+$ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
-pkg: github.com/nikolaydubina/fpfloat
-BenchmarkFP3FloatFromString/small-10                         855162544            6.933 ns/op           0 B/op           0 allocs/op
-BenchmarkFP3FloatFromString/large-10                         275428832            21.85 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvAtoi/small-10                      1000000000            4.847 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvAtoi/large-10                       425393912            14.05 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvParseInt/small/int32-10             558908575            10.73 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvParseInt/small/int64-10             565205856            10.73 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvParseInt/large/int64-10             218402264            27.54 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/small/float32-10       343771328            17.50 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/small/float64-10       335683317            17.80 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/large/float32-10       128418057            46.25 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_strconvParseFloat/large/float64-10       127516434            46.83 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_fmtSscanf/small-10                        20711220            289.1 ns/op          69 B/op           2 allocs/op
-BenchmarkParseFloat_fmtSscanf/large-10                         9629078            623.5 ns/op          88 B/op           3 allocs/op
+pkg: github.com/nikolaydubina/fpdecimal
+BenchmarkFP3DecimalFromString/small-10                      827744476            7.138 ns/op           0 B/op           0 allocs/op
+BenchmarkFP3DecimalFromString/large-10                      276668296            21.79 ns/op           0 B/op           0 allocs/op
+BenchmarkParseInt_strconvAtoi/small-10                     1000000000            4.791 ns/op           0 B/op           0 allocs/op
+BenchmarkParseInt_strconvAtoi/large-10                      416969704            14.18 ns/op           0 B/op           0 allocs/op
+BenchmarkParseInt_strconvParseInt/small/int32-10            567803484            10.56 ns/op           0 B/op           0 allocs/op
+BenchmarkParseInt_strconvParseInt/small/int64-10            567515059            10.56 ns/op           0 B/op           0 allocs/op
+BenchmarkParseInt_strconvParseInt/large/int64-10            221833478            27.14 ns/op           0 B/op           0 allocs/op
+BenchmarkParseFloat_strconvParseFloat/small/float32-10      349272979            17.34 ns/op           0 B/op           0 allocs/op
+BenchmarkParseFloat_strconvParseFloat/small/float64-10      333610484            17.82 ns/op           0 B/op           0 allocs/op
+BenchmarkParseFloat_strconvParseFloat/large/float32-10      129024007            46.45 ns/op           0 B/op           0 allocs/op
+BenchmarkParseFloat_strconvParseFloat/large/float64-10      128212430            46.79 ns/op           0 B/op           0 allocs/op
+BenchmarkParseFloat_fmtSscanf/small-10                       20381784            293.4 ns/op          69 B/op           2 allocs/op
+BenchmarkParseFloat_fmtSscanf/large-10                        9484489            629.3 ns/op          88 B/op           3 allocs/op
 PASS
-ok      github.com/nikolaydubina/fpfloat    175.917s
+ok      github.com/nikolaydubina/fpdecimal    175.518s
 ```
 
 Format
 ```
-nikolaydubina@Nikolays-MacBook-Pro fpfloat % go test -bench=. -benchtime=5s -benchmem ./...
+$ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
-pkg: github.com/nikolaydubina/fpfloat
-BenchmarkFP3Float_String/small-10                           152158830            39.09 ns/op          10 B/op           1 allocs/op
-BenchmarkFP3Float_String/large-10                            95981250            63.11 ns/op          48 B/op           2 allocs/op
-BenchmarkStringInt_strconvItoa/small-10                     709914073            8.556 ns/op           1 B/op           0 allocs/op
-BenchmarkStringInt_strconvItoa/large-10                     235245307            25.64 ns/op          16 B/op           1 allocs/op
-BenchmarkStringInt_strconvFormatInt/small-10                705413114            8.522 ns/op           1 B/op           0 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/small/float32-10     51060498            117.7 ns/op          31 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/small/float64-10     40995589            146.3 ns/op          31 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/large/float32-10     60731203            99.07 ns/op          48 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/large/float64-10     61169353            96.83 ns/op          48 B/op           2 allocs/op
-BenchmarkStringFloat_fmtSprintf/small-10                     42804757            138.5 ns/op          16 B/op           2 allocs/op
-BenchmarkStringFloat_fmtSprintf/large-10                     47333761            126.2 ns/op          28 B/op           2 allocs/op
+pkg: github.com/nikolaydubina/fpdecimal
+BenchmarkFP3Decimal_String/small-10                         161572239            37.17 ns/op          10 B/op           1 allocs/op
+BenchmarkFP3Decimal_String/large-10                          92706448            63.58 ns/op          48 B/op           2 allocs/op
+BenchmarkStringInt_strconvItoa/small-10                     729627100            8.327 ns/op           1 B/op           0 allocs/op
+BenchmarkStringInt_strconvItoa/large-10                     233921521            25.61 ns/op          16 B/op           1 allocs/op
+BenchmarkStringInt_strconvFormatInt/small-10                736678662            8.141 ns/op           1 B/op           0 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/small/float32-10     50491785            117.8 ns/op          31 B/op           2 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/small/float64-10     40790115            147.4 ns/op          31 B/op           2 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/large/float32-10     60102750            99.38 ns/op          48 B/op           2 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/large/float64-10     61115224            97.45 ns/op          48 B/op           2 allocs/op
+BenchmarkStringFloat_fmtSprintf/small-10                     43199199            138.2 ns/op          16 B/op           2 allocs/op
+BenchmarkStringFloat_fmtSprintf/large-10                     47292736            126.2 ns/op          28 B/op           2 allocs/op
 PASS
-ok      github.com/nikolaydubina/fpfloat    175.917s
+ok      github.com/nikolaydubina/fpdecimal    175.518s
 ```
 
 ### Future Work
 
 - Adding wrapper into a struct to block arithmetic operations (+benchmarks encoding, method calls overhead, long chains of calls)
 - Separate repo to benchmark other open source versions (decimals) with same benchmark tests as in this repo (do not include other modules here just for benchmarking)
-- Linter to warn about using constants in expressions containing `fpfloat` type.
+- Linter to warn about using constants in expressions containing `fpdecimal` type.
 
 ### References
 
@@ -99,11 +99,11 @@ ok      github.com/nikolaydubina/fpfloat    175.917s
 
 ### Appendix A: Comparison to other libraries
 
-- https://github.com/shopspring/decimal solves arbitrary precision, fpfloat solves only simple small floats
+- https://github.com/shopspring/decimal solves arbitrary precision, fpdecimal solves only simple small decimals
 
 ### Appendix B: Benchmarking https://github.com/shopspring/decimal (2022-05-28)
 ```
-nikolaydubina@Nikolays-MacBook-Pro decimal % go test -bench=. -benchtime=5s -benchmem ./...
+$ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/shopspring/decimal
@@ -140,7 +140,7 @@ Next, currencies without decimal digits are typically 1000x larger than dollar, 
 Sort of. Operations with defined types (variables) will fail.
 ```go
 var a int64
-var b fpfloat.FP3FloatFromInt(1000)
+var b fpdecimal.FP3DecimalFromInt(1000)
 
 // does not compile
 a + b
@@ -149,7 +149,7 @@ a + b
 However, untyped constants will be resolved to underlying type `int64` and will be allowed.  
 ```go
 const a 10000
-var b fpfloat.FP3FloatFromInt(1000)
+var b fpdecimal.FP3DecimalFromInt(1000)
 
 // compiles
 a + b
@@ -162,7 +162,7 @@ b *= 23
 ```
 
 Is this a problem? 
-* For multiplication and division - yes, it can be. You have to be careful not to multiply two fpfloat numbers, since scaling factor will quadruple. Multiplying by constants is ok tho.
+* For multiplication and division - yes, it can be. You have to be careful not to multiply two `fpdecimal` numbers, since scaling factor will quadruple. Multiplying by constants is ok tho.
 * For addition substraction - yes, it can be. You have to be careful and remind yourself that constants would be reduced 1000x.
 
 Both of this can be addressed at compile time by providing linter. This can be also addressed by wrapping into a struct and defining methods.

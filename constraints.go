@@ -1,4 +1,4 @@
-package fpfloat
+package fpdecimal
 
 type Float interface {
 	~float32 | ~float64

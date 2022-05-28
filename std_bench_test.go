@@ -1,4 +1,4 @@
-package fpfloat_test
+package fpdecimal_test
 
 import (
 	"fmt"

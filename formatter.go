@@ -1,4 +1,4 @@
-package fpfloat
+package fpdecimal
 
 import (
 	"strconv"
@@ -6,8 +6,8 @@ import (
 
 const zeroPrefix = "0.000000000000000000000000000000000000"
 
-// FixedPointFloatToString formats fixed-point float to string.
-func FixedPointFloatToString(v int64, p int) string {
+// FixedPointDecimalToString formats fixed-point decimal to string.
+func FixedPointDecimalToString(v int64, p int) string {
 	if v == 0 {
 		return "0"
 	}

@@ -1,4 +1,4 @@
-package fpfloat
+package fpdecimal
 
 import "errors"
 
@@ -11,8 +11,8 @@ var (
 	errMultipleDots           = errors.New("multiple dots")
 )
 
-// ParseFixedPointFloat parses fixed-point float of p fractions into int64.
-func ParseFixedPointFloat(s string, p int8) (int64, error) {
+// ParseFixedPointDecimal parses fixed-point decimal of p fractions into int64.
+func ParseFixedPointDecimal(s string, p int8) (int64, error) {
 	if s == "" {
 		return 0, errEmptyString
 	}

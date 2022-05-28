@@ -1,3 +1,3 @@
-module github.com/nikolaydubina/fpfloat
+module github.com/nikolaydubina/fpdecimal
 
 go 1.18
