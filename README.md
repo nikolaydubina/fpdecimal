@@ -7,6 +7,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/fpdecimal)](https://goreportcard.com/report/github.com/nikolaydubina/fpdecimal)
 
 * ~100LOC
+* stores internally as `int64`
+* does not use `float64` in parsing nor printing
 * Fuzz tests
 * 100% coverage
 * JSON encoding/decoding
@@ -17,6 +19,7 @@
 * 20x faster parsing than [shopspring/decimal](https://github.com/shopspring/decimal)
 * no overhead for arithmetic operations
 * no overhead for memory
+* blocking error-prone fixed-point operations
 
 ```go
 var BuySP500Price = fpdecimal.FP3DecimalFromInt(9000)
