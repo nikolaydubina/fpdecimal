@@ -1,4 +1,4 @@
-# 🪙 Small Fixed-Point Decimals (FP3Decimal)
+# ⚙️ Small Fixed-Point Decimals (FP3Decimal)
 
 > _When you have small and simple float-like numbers. Precise and Fast. Perfect for money._
 
