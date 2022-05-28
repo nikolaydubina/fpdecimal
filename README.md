@@ -52,9 +52,9 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkFP3DecimalFromString/small-10                      827744476            7.138 ns/op           0 B/op           0 allocs/op
+BenchmarkFP3DecimalFromString/small-10                      827744476             7.13 ns/op           0 B/op           0 allocs/op
 BenchmarkFP3DecimalFromString/large-10                      276668296            21.79 ns/op           0 B/op           0 allocs/op
-BenchmarkParseInt_strconvAtoi/small-10                     1000000000            4.791 ns/op           0 B/op           0 allocs/op
+BenchmarkParseInt_strconvAtoi/small-10                     1000000000             4.71 ns/op           0 B/op           0 allocs/op
 BenchmarkParseInt_strconvAtoi/large-10                      416969704            14.18 ns/op           0 B/op           0 allocs/op
 BenchmarkParseInt_strconvParseInt/small/int32-10            567803484            10.56 ns/op           0 B/op           0 allocs/op
 BenchmarkParseInt_strconvParseInt/small/int64-10            567515059            10.56 ns/op           0 B/op           0 allocs/op
@@ -63,8 +63,8 @@ BenchmarkParseFloat_strconvParseFloat/small/float32-10      349272979           
 BenchmarkParseFloat_strconvParseFloat/small/float64-10      333610484            17.82 ns/op           0 B/op           0 allocs/op
 BenchmarkParseFloat_strconvParseFloat/large/float32-10      129024007            46.45 ns/op           0 B/op           0 allocs/op
 BenchmarkParseFloat_strconvParseFloat/large/float64-10      128212430            46.79 ns/op           0 B/op           0 allocs/op
-BenchmarkParseFloat_fmtSscanf/small-10                       20381784            293.4 ns/op          69 B/op           2 allocs/op
-BenchmarkParseFloat_fmtSscanf/large-10                        9484489            629.3 ns/op          88 B/op           3 allocs/op
+BenchmarkParseFloat_fmtSscanf/small-10                       20381784           293.4  ns/op          69 B/op           2 allocs/op
+BenchmarkParseFloat_fmtSscanf/large-10                        9484489           629.3  ns/op          88 B/op           3 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    175.518s
 ```
@@ -75,17 +75,17 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkFP3Decimal_String/small-10                         161572239            37.17 ns/op          10 B/op           1 allocs/op
-BenchmarkFP3Decimal_String/large-10                          92706448            63.58 ns/op          48 B/op           2 allocs/op
-BenchmarkStringInt_strconvItoa/small-10                     729627100            8.327 ns/op           1 B/op           0 allocs/op
-BenchmarkStringInt_strconvItoa/large-10                     233921521            25.61 ns/op          16 B/op           1 allocs/op
-BenchmarkStringInt_strconvFormatInt/small-10                736678662            8.141 ns/op           1 B/op           0 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/small/float32-10     50491785            117.8 ns/op          31 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/small/float64-10     40790115            147.4 ns/op          31 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/large/float32-10     60102750            99.38 ns/op          48 B/op           2 allocs/op
-BenchmarkStringFloat_strconvFormatFloat/large/float64-10     61115224            97.45 ns/op          48 B/op           2 allocs/op
-BenchmarkStringFloat_fmtSprintf/small-10                     43199199            138.2 ns/op          16 B/op           2 allocs/op
-BenchmarkStringFloat_fmtSprintf/large-10                     47292736            126.2 ns/op          28 B/op           2 allocs/op
+BenchmarkFP3Decimal_String/small-10                         161572239            37.1 ns/op          10 B/op           1 allocs/op
+BenchmarkFP3Decimal_String/large-10                          92706448            63.5 ns/op          48 B/op           2 allocs/op
+BenchmarkStringInt_strconvItoa/small-10                     729627100             8.3 ns/op           1 B/op           0 allocs/op
+BenchmarkStringInt_strconvItoa/large-10                     233921521            25.6 ns/op          16 B/op           1 allocs/op
+BenchmarkStringInt_strconvFormatInt/small-10                736678662             8.1 ns/op           1 B/op           0 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/small/float32-10     50491785           117.8 ns/op          31 B/op           2 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/small/float64-10     40790115           147.4 ns/op          31 B/op           2 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/large/float32-10     60102750            99.3 ns/op          48 B/op           2 allocs/op
+BenchmarkStringFloat_strconvFormatFloat/large/float64-10     61115224            97.4 ns/op          48 B/op           2 allocs/op
+BenchmarkStringFloat_fmtSprintf/small-10                     43199199           138.2 ns/op          16 B/op           2 allocs/op
+BenchmarkStringFloat_fmtSprintf/large-10                     47292736           126.2 ns/op          28 B/op           2 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    175.518s
 ```
@@ -113,24 +113,24 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/shopspring/decimal
-BenchmarkNewFromFloatWithExponent-10                        59701516         97.07 ns/op         106 B/op           4 allocs/op
+BenchmarkNewFromFloatWithExponent-10                        59701516          97.7 ns/op         106 B/op           4 allocs/op
 BenchmarkNewFromFloat-10                                    14771503         410.3 ns/op          67 B/op           2 allocs/op
 BenchmarkNewFromStringFloat-10                              16246342         375.2 ns/op         175 B/op           5 allocs/op
-Benchmark_FloorFast-10                                    1000000000         2.143 ns/op           0 B/op           0 allocs/op
+Benchmark_FloorFast-10                                    1000000000           2.1 ns/op           0 B/op           0 allocs/op
 Benchmark_FloorRegular-10                                   53857244         106.3 ns/op         112 B/op           6 allocs/op
-Benchmark_DivideOriginal-10                                        7     715322768 ns/op   737406446 B/op    30652495 allocs/op
-Benchmark_DivideNew-10                                            22     262893689 ns/op   308046721 B/op    12054905 allocs/op
+Benchmark_DivideOriginal-10                                        7   715322768   ns/op   737406446 B/op    30652495 allocs/op
+Benchmark_DivideNew-10                                            22   262893689   ns/op   308046721 B/op    12054905 allocs/op
 BenchmarkDecimal_RoundCash_Five-10                           9311530         636.5 ns/op         616 B/op          28 allocs/op
-Benchmark_Cmp-10                                                  44     133191579 ns/op          24 B/op           1 allocs/op
+Benchmark_Cmp-10                                                  44   133191579   ns/op          24 B/op           1 allocs/op
 Benchmark_decimal_Decimal_Add_different_precision-10        31561636         176.6 ns/op         280 B/op           9 allocs/op
 Benchmark_decimal_Decimal_Sub_different_precision-10        36892767         164.4 ns/op         240 B/op           9 allocs/op
-Benchmark_decimal_Decimal_Add_same_precision-10            134831919         44.96 ns/op          80 B/op           2 allocs/op
-Benchmark_decimal_Decimal_Sub_same_precision-10            134902627         43.61 ns/op          80 B/op           2 allocs/op
-BenchmarkDecimal_IsInteger-10                               92543083         66.51 ns/op           8 B/op           1 allocs/op
-BenchmarkDecimal_NewFromString-10                             827455          7382 ns/op        3525 B/op         216 allocs/op
-BenchmarkDecimal_NewFromString_large_number-10                212538         28836 ns/op       16820 B/op         360 allocs/op
-BenchmarkDecimal_ExpHullAbraham-10                             10000        572091 ns/op      486628 B/op         568 allocs/op
-BenchmarkDecimal_ExpTaylor-10                                  26343        222915 ns/op      431226 B/op        3172 allocs/op
+Benchmark_decimal_Decimal_Add_same_precision-10            134831919          44.9 ns/op          80 B/op           2 allocs/op
+Benchmark_decimal_Decimal_Sub_same_precision-10            134902627          43.1 ns/op          80 B/op           2 allocs/op
+BenchmarkDecimal_IsInteger-10                               92543083          66.1 ns/op           8 B/op           1 allocs/op
+BenchmarkDecimal_NewFromString-10                             827455        7382   ns/op        3525 B/op         216 allocs/op
+BenchmarkDecimal_NewFromString_large_number-10                212538       28836   ns/op       16820 B/op         360 allocs/op
+BenchmarkDecimal_ExpHullAbraham-10                             10000      572091   ns/op      486628 B/op         568 allocs/op
+BenchmarkDecimal_ExpTaylor-10                                  26343      222915   ns/op      431226 B/op        3172 allocs/op
 PASS
 ok      github.com/shopspring/decimal    123.541sa
 ```
