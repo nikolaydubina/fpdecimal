@@ -104,7 +104,10 @@ ok      github.com/nikolaydubina/fpdecimal    175.518s
 
 - https://github.com/shopspring/decimal solves arbitrary precision, fpdecimal solves only simple small decimals
 
-## Appendix B: Benchmarking https://github.com/shopspring/decimal (2022-05-28)
+## Appendix B: Benchmarking [shopspring/decimal](https://github.com/shopspring/decimal)
+
+`2022-05-28`:
+
 ```
 $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
