@@ -161,4 +161,8 @@ b - 42
 b *= 23
 ```
 
-Is this a problem? For multiplication and division - no. For addition substraction - yes, it can be. You have to be careful and remind yourself that constants would be reduced 1000x. This may be addressed at compile time by providing linter. This can be also addressed by wrapping into struct and defining methods.
+Is this a problem? 
+* For multiplication and division - yes, it can be. You have to be careful not to multiply two fpfloat numbers, since scaling factor will quadruple. Multiplying by constants is ok tho.
+* For addition substraction - yes, it can be. You have to be careful and remind yourself that constants would be reduced 1000x.
+
+Both of this can be addressed at compile time by providing linter. This can be also addressed by wrapping into a struct and defining methods.
