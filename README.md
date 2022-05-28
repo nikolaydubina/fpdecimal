@@ -14,7 +14,7 @@
 * 3x faster parsing than float
 * 2x faster printing than float
 * 30x faster parsing than `fmt`
-* 20x faster than [shopspring/decimal](https://github.com/shopspring/decimal)
+* 20x faster parsing than [shopspring/decimal](https://github.com/shopspring/decimal)
 * no overhead for arithmetic operations
 * no overhead for memory
 
