@@ -3,6 +3,7 @@
 > _When you have small and simple float-like numbers. Precise and Fast. Perfect for money._
 
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
+[![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/fpdecimal.svg)](https://pkg.go.dev/github.com/nikolaydubina/fpdecimal)
 
 * 100LOC
 * Fuzz tests
