@@ -11,8 +11,9 @@
 * JSON encoding/decoding
 * Arithmetic operators
 * As fast as integers (parsing, formatting, operations)
-* 90x faster parsing than float
+* 3x faster parsing than float
 * 2x faster printing than float
+* 30x faster parsing than `fmt`
 * 20x faster than [shopspring/decimal](https://github.com/shopspring/decimal)
 
 ```go
