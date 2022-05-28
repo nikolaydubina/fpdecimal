@@ -142,7 +142,9 @@ Next, currencies without decimal digits are typically 1000x larger than dollar, 
 
 ## Appendix D: Is it safe to use arithmetic operators in Go?
 
-Sort of. Operations with defined types (variables) will fail.
+Sort of... 
+
+Operations with defined types (variables) will fail.
 ```go
 var a int64
 var b fpdecimal.FP3DecimalFromInt(1000)
