@@ -2,7 +2,7 @@
 
 > _When you have small and simple float-like numbers. Precise and Fast. Perfect for money._
 
-> **Warning**
+> **Warning**  
 > Watchout arithmetic operaions or wrap into a struct. Linter is not ready yet. More details in Appendix D.
 
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
