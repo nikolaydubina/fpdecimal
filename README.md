@@ -193,4 +193,7 @@ Is this a problem?
 * For multiplication and division - yes, it can be. You have to be careful not to multiply two `fpdecimal` numbers, since scaling factor will quadruple. Multiplying by constants is ok tho.
 * For addition substraction - yes, it can be. You have to be careful and remind yourself that constants would be reduced 1000x.
 
-Both of this can be addressed at compile time by providing linter. This can be also addressed by wrapping into a struct and defining methods.
+Both of this can be addressed at compile time by providing linter.
+This can be also addressed by wrapping into a struct and defining methods.
+Formed is hard to achieve in Go, due to lack of operator overload and lots of work required to write AST parser.
+Later has been implemented in this pacakge, and, as benchmarks show, without any extra memory or calls overhead as compared to `int64`.
