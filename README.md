@@ -9,17 +9,17 @@
 * ~100LOC
 * stores internally as `int64`
 * does not use `float64` in parsing nor printing
-* Fuzz tests
+* Fuzz tests (parsing, printing, arithmetics)
 * 100% coverage
 * JSON encoding/decoding
-* As fast as integers (parsing, formatting, operations)
+* As fast as integers (parsing, printing, arithmetics)
 * 3x faster parsing than float
 * 2x faster printing than float
 * 30x faster parsing than `fmt`
 * 20x faster parsing than [shopspring/decimal](https://github.com/shopspring/decimal)
 * no overhead for arithmetic operations
-* no overhead for memory
-* blocking error-prone fixed-point operations
+* no overhead for memory (same size as `int64`)
+* blocking error-prone fixed-point arithmetics
 
 ```go
 var BuySP500Price = fp3.FromInt(9000)
