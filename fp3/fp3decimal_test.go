@@ -168,6 +168,7 @@ func BenchmarkPrint_Decimal(b *testing.B) {
 				b.Error(err)
 			}
 			tests = append(tests, v)
+			tests = append(tests, fp3.Zero.Sub(v))
 		}
 
 		b.ResetTimer()

@@ -85,6 +85,7 @@ func BenchmarkPrint_int_strconv_Itoa(b *testing.B) {
 				b.Error(err)
 			}
 			tests = append(tests, v)
+			tests = append(tests, -v)
 		}
 
 		b.ResetTimer()
@@ -144,6 +145,7 @@ func BenchmarkPrint_int_strconv_FormatInt(b *testing.B) {
 					b.Error(err)
 				}
 				tests = append(tests, v)
+				tests = append(tests, -v)
 			}
 
 			b.ResetTimer()

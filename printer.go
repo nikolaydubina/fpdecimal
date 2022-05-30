@@ -7,29 +7,42 @@ import (
 const zeroPrefix = "0.000000000000000000000000000000000000"
 
 // FixedPointDecimalToString formats fixed-point decimal to string.
+// strconv.AppendInt is very efficient.
+// Efficient converting int64 to ASCII is not as trivial.
 func FixedPointDecimalToString(v int64, p int) string {
 	if v == 0 {
 		return "0"
 	}
 
-	n := false
+	// max int64: +9223372036854775.807
+	// min int64: -9223372036854775.808
+	// max bytes int64: 21
+	b := make([]byte, 1, 21)
+
 	if v < 0 {
 		v = -v
-		n = true
+		b[0] = '-'
 	}
 
-	s := strconv.FormatInt(int64(v), 10)
+	b = strconv.AppendInt(b, int64(v), 10)
 
-	if len(s) > p {
-		p := len(s) - p
-		s = s[:p] + "." + s[p:]
+	if len(b) > (p + 1) {
+		i := len(b) - p
+		b = append(b, 0)
+		copy(b[i+1:], b[i:])
+		b[i] = '.'
 	} else {
-		s = zeroPrefix[:(2+p-len(s))] + s
+		i := 3 + p - len(b)
+		for j := 0; j < i; j++ {
+			b = append(b, 0)
+		}
+		copy(b[i:], b)
+		copy(b[1:], []byte(zeroPrefix[:i]))
 	}
 
-	if n {
-		s = "-" + s
+	if b[0] != '-' {
+		b = b[1:]
 	}
 
-	return s
+	return string(b)
 }
