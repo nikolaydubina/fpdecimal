@@ -8,18 +8,15 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/fpdecimal)](https://goreportcard.com/report/github.com/nikolaydubina/fpdecimal)
 
 * ~100LOC
-* Stores internally as `int64`
-* Does not use `float` in parsing nor printing
-* Fuzz tests (parsing, printing, arithmetics)
-* 100% coverage
-* JSON encoding/decoding
-* As fast as `int64` (parsing, printing, arithmetics)
-* 3x faser parsing than `float`
-* 30x faster parsing than `fmt`
-* 20x faster parsing than [shopspring/decimal](https://github.com/shopspring/decimal)
-* No overhead for arithmetic operations
-* No overhead for memory, same size as `int64`
-* Preventing error-prone fixed-point arithmetics
+* **Precise**: `int64` inside and **does not** use `float` neither in parsing nor printing
+* **Fuzz tests**: parsing, printing, arithmetics `int64` compatibility
+* **JSON** encoding/decoding
+* **Fast Parsing**: same as `int64`, 3x faser `float`, 20x faster [shopspring/decimal](https://github.com/shopspring/decimal), 30x faster `fmt`
+* **Fast Printing**: same as `int64`
+* **Fast Arithmetics**: same as `int64`
+* **Zero** overhead for arithmetic operations
+* **Zero** overhead for memory, same size as `int64`
+* **Safe**: preventing error-prone fixed-point arithmetics
 
 ```go
 var BuySP500Price = fp3.FromInt(9000)
