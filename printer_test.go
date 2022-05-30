@@ -50,8 +50,8 @@ func FuzzFixedPointDecimalToString(f *testing.F) {
 			return
 		}
 
-		if s != fpdecimal.FixedPointDecimalToString(v, 3) {
-			t.Error(r, s)
+		if fs := fpdecimal.FixedPointDecimalToString(v, 3); s != fs {
+			t.Error(s, fs, f, r, v)
 		}
 	})
 }

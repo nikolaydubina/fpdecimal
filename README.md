@@ -85,17 +85,17 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkPrint_FP3Decimal/small-10                            164560935            36.44 ns/op          10 B/op           1 allocs/op
-BenchmarkPrint_FP3Decimal/large-10                             95584335            63.17 ns/op          48 B/op           2 allocs/op
-BenchmarkPrint_int_strconv_Itoa/small-10                      731089902             8.19 ns/op           1 B/op           0 allocs/op
-BenchmarkPrint_int_strconv_Itoa/large-10                      234441306            25.77 ns/op          16 B/op           1 allocs/op
-BenchmarkPrint_int_strconv_FormatInt/small-10                 728307549             8.26 ns/op           1 B/op           0 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/small/float32-10      49801364           117.8  ns/op          31 B/op           2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/small/float64-10      40938864           148.3  ns/op          31 B/op           2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/large/float32-10      58160480            99.12 ns/op          48 B/op           2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/large/float64-10      61878582            97.22 ns/op          48 B/op           2 allocs/op
-BenchmarkPrint_float_fmt_Sprintf/small-10                      43542469           138.8  ns/op          16 B/op           2 allocs/op
-BenchmarkPrint_float_fmt_Sprintf/large-10                      47824404           125.7  ns/op          28 B/op           2 allocs/op
+BenchmarkPrint_FP3Decimal/small-10                            235701032            25.4 ns/op           7 B/op           1 allocs/op
+BenchmarkPrint_FP3Decimal/large-10                            185768853            32.1 ns/op          24 B/op           1 allocs/op
+BenchmarkPrint_int_strconv_Itoa/small-10                      457453576            13.1 ns/op           3 B/op           0 allocs/op
+BenchmarkPrint_int_strconv_Itoa/large-10                      229820906            26.1 ns/op          18 B/op           1 allocs/op
+BenchmarkPrint_int_strconv_FormatInt/small-10                 728307549            13.1 ns/op           3 B/op           0 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float32-10      49801364           117.8 ns/op          31 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float64-10      40938864           148.3 ns/op          31 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float32-10      58160480            99.1 ns/op          48 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float64-10      61878582            97.2 ns/op          48 B/op           2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/small-10                      43542469           138.8 ns/op          16 B/op           2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/large-10                      47824404           125.7 ns/op          28 B/op           2 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
