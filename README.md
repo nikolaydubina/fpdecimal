@@ -9,7 +9,7 @@
 
 * ~100LOC
 * **Precise**: `int64` inside and **does not** use `float` neither in parsing nor printing
-* **Fuzz tests**: parsing, printing, arithmetics `int64` compatibility
+* **Fuzz tests**: parsing, printing, arithmetics
 * **JSON** encoding/decoding
 * **Fast Parsing**: same as `int64`, 3x faser `float`, 20x faster [shopspring/decimal](https://github.com/shopspring/decimal), 30x faster `fmt`
 * **Fast Printing**: same as `int64`
