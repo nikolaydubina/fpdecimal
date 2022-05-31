@@ -32,7 +32,7 @@ if err := json.Unmarshal(input, &v); err != nil {
 }
 
 var amountToBuy fp3.Decimal
-if v.SP500.HigherThan(BuySP500Price) {
+if v.SP500.GreaterThan(BuySP500Price) {
     amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
 }
 

@@ -11,7 +11,58 @@ import (
 	"github.com/nikolaydubina/fpdecimal/fp3"
 )
 
-func FuzzDecimal_ParseStringSameAsDecimal(f *testing.F) {
+func FuzzArithmetics(f *testing.F) {
+	tests := [][2]int64{
+		{1, 2},
+		{1, -5},
+		{1, 0},
+		{1100, -2},
+	}
+	for _, tc := range tests {
+		f.Add(tc[0], tc[1])
+	}
+	f.Fuzz(func(t *testing.T, a, b int64) {
+		fa := fp3.FromIntScaled(a)
+		fb := fp3.FromIntScaled(b)
+
+		v := []bool{
+			// sum commutativity
+			fa.Add(fb) == fb.Add(fa),
+
+			// sum associativity
+			fp3.Zero.Add(fa).Add(fb).Add(fa) == fp3.Zero.Add(fb).Add(fa).Add(fa),
+
+			// sum zero
+			fa == fa.Add(fb).Sub(fb),
+			fa == fa.Sub(fb).Add(fb),
+			fp3.Zero == fp3.Zero.Add(fa).Sub(fa),
+
+			// product identity
+			fa == fa.Mul(1),
+
+			// product zero
+			fp3.Zero == fa.Mul(0),
+
+			// match number
+			(a == b) == (fa == fb),
+			a < b == fa.LessThan(fb),
+			a > b == fa.GreaterThan(fb),
+			a <= b == fa.LessThanOrEqual(fb),
+			a >= b == fa.GreaterThanOrEqual(fb),
+
+			// match number convert
+			fp3.FromIntScaled(a+b) == fa.Add(fb),
+			fp3.FromIntScaled(a-b) == fa.Sub(fb),
+		}
+		for i, q := range v {
+			if !q {
+				t.Error(i, a, b, fa, fb)
+			}
+		}
+	})
+}
+
+func FuzzParse_StringSameAsFloat(f *testing.F) {
 	tests := []float32{
 		0,
 		0.100,
@@ -59,7 +110,7 @@ func FuzzDecimal_ParseStringSameAsDecimal(f *testing.F) {
 	})
 }
 
-func FuzzDecimal_ParseStringRaw(f *testing.F) {
+func FuzzParse_StringRaw(f *testing.F) {
 	tests := []string{
 		"123.456",
 		"0.123",
@@ -92,7 +143,7 @@ func FuzzDecimal_ParseStringRaw(f *testing.F) {
 	})
 }
 
-func FuzzDecimal_ToType(f *testing.F) {
+func FuzzToFloat(f *testing.F) {
 	tests := []float64{
 		0,
 		0.001,
@@ -143,7 +194,7 @@ var testsFloats = []struct {
 	},
 }
 
-func BenchmarkParse_Decimal(b *testing.B) {
+func BenchmarkParse(b *testing.B) {
 	var s fp3.Decimal
 	var err error
 	for _, tc := range testsFloats {
@@ -158,7 +209,7 @@ func BenchmarkParse_Decimal(b *testing.B) {
 	}
 }
 
-func BenchmarkPrint_Decimal(b *testing.B) {
+func BenchmarkPrint(b *testing.B) {
 	var s string
 	for _, tc := range testsFloats {
 		tests := make([]fp3.Decimal, 0, len(tc.vals))
@@ -183,7 +234,7 @@ func BenchmarkPrint_Decimal(b *testing.B) {
 	}
 }
 
-func TestDecimal_UnmarshalJSON(t *testing.T) {
+func TestUnmarshalJSON(t *testing.T) {
 	type MyType struct {
 		TeslaStockPrice fp3.Decimal `json:"tesla-stock-price"`
 	}
@@ -213,7 +264,7 @@ func TestDecimal_UnmarshalJSON(t *testing.T) {
 	}
 }
 
-func FuzzDecimal_UnmarshalJSON(f *testing.F) {
+func FuzzUnmarshalJSON(f *testing.F) {
 	type MyType struct {
 		A fp3.Decimal `json:"a"`
 	}
@@ -266,7 +317,7 @@ func ExampleDecimal() {
 	}
 
 	var amountToBuy fp3.Decimal
-	if v.SP500.HigherThan(BuySP500Price) {
+	if v.SP500.GreaterThan(BuySP500Price) {
 		amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
 	}
 
@@ -274,75 +325,7 @@ func ExampleDecimal() {
 	// Output: 18000.046
 }
 
-func FuzzDecimal_AddSub(f *testing.F) {
-	tests := [][2]float32{
-		{1, 2},
-		{1, -5},
-		{1, 0},
-		{1.1, -0.002},
-	}
-	for _, tc := range tests {
-		f.Add(tc[0], tc[1])
-	}
-	f.Fuzz(func(t *testing.T, a, b float32) {
-		fa := fp3.FromFloat(a)
-		fb := fp3.FromFloat(b)
-
-		if fa.Add(fb) != fb.Add(fa) {
-			t.Error(a, b)
-		}
-
-		if fp3.Zero.Add(fa).Add(fb).Add(fa) != fp3.Zero.Add(fb).Add(fa).Add(fa) {
-			t.Error(a, b)
-		}
-
-		if v := fa.Add(fb).Sub(fb); v != fa {
-			t.Error(a, b, v)
-		}
-
-		if fp3.Zero.Add(fa).Sub(fa) != fp3.Zero {
-			t.Error(a)
-		}
-
-	})
-}
-
-func FuzzDecimal_AddSub_Int(f *testing.F) {
-	tests := [][2]int{
-		{1, 2},
-		{2, -5},
-		{1, 0},
-		{111, -5},
-		{0, 0},
-	}
-	for _, tc := range tests {
-		f.Add(tc[0], tc[1])
-	}
-	f.Fuzz(func(t *testing.T, a, b int) {
-		fa := fp3.FromInt(a)
-		fb := fp3.FromInt(b)
-
-		if a < b {
-			if !fa.LessThan(fb) {
-				t.Error(a, b, fa, fb)
-			}
-		}
-
-		if a > b {
-			if !fa.HigherThan(fb) {
-				t.Error(a, b, fa, fb)
-			}
-		}
-
-		if a == b {
-			if fa != fb {
-				t.Error(a, b, fa, fb)
-			}
-		}
-	})
-}
-
-func BenchmarkArithmetic_Decimal(b *testing.B) {
+func BenchmarkArithmetic(b *testing.B) {
 	x, _ := fp3.FromString("251.231")
 	y, _ := fp3.FromString("21231.001")
 
@@ -369,7 +352,7 @@ func BenchmarkArithmetic_Decimal(b *testing.B) {
 	}
 }
 
-func TestDecimal_memlayout(t *testing.T) {
+func TestDecimalMemoryLayout(t *testing.T) {
 	a, _ := fp3.FromString("-1000.123")
 	if v := unsafe.Sizeof(a); v != 8 {
 		t.Error(a, v)

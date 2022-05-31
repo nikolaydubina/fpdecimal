@@ -17,15 +17,29 @@ var Zero = Decimal{}
 
 func FromInt[T constraints.Integer](v T) Decimal { return Decimal{int64(v) * 1000} }
 
-func FromFloat[T constraints.Float](v T) Decimal {
-	return Decimal{int64(float64(v) * 1000)}
-}
+func FromFloat[T constraints.Float](v T) Decimal { return Decimal{int64(v * 1000)} }
+
+func FromIntScaled[T constraints.Integer](v T) Decimal { return Decimal{int64(v)} }
 
 func (a Decimal) Float32() float32 { return float32(a.v) / 1000 }
 
 func (a Decimal) Float64() float64 { return float64(a.v) / 1000 }
 
 func (a Decimal) String() string { return fpdecimal.FixedPointDecimalToString(int64(a.v), 3) }
+
+func (a Decimal) Add(b Decimal) Decimal { return Decimal{v: a.v + b.v} }
+
+func (a Decimal) Sub(b Decimal) Decimal { return Decimal{v: a.v - b.v} }
+
+func (a Decimal) Mul(b int) Decimal { return Decimal{v: a.v * int64(b)} }
+
+func (a Decimal) GreaterThan(b Decimal) bool { return a.v > b.v }
+
+func (a Decimal) LessThan(b Decimal) bool { return a.v < b.v }
+
+func (a Decimal) GreaterThanOrEqual(b Decimal) bool { return a.v >= b.v }
+
+func (a Decimal) LessThanOrEqual(b Decimal) bool { return a.v <= b.v }
 
 func FromString(s string) (Decimal, error) {
 	v, err := fpdecimal.ParseFixedPointDecimal(s, 3)
@@ -36,13 +50,3 @@ func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
 	*v, err = FromString(string(b))
 	return err
 }
-
-func (a Decimal) Add(b Decimal) Decimal { return Decimal{v: a.v + b.v} }
-
-func (a Decimal) Sub(b Decimal) Decimal { return Decimal{v: a.v - b.v} }
-
-func (a Decimal) Mul(b int) Decimal { return Decimal{v: a.v * int64(b)} }
-
-func (a Decimal) HigherThan(b Decimal) bool { return a.v > b.v }
-
-func (a Decimal) LessThan(b Decimal) bool { return a.v < b.v }
