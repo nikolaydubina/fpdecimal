@@ -40,6 +40,10 @@ fmt.Println(amountToBuy)
 // Output: 18000.046
 ```
 
+### Warning
+
+* Overflows, same as `int64`
+
 ### Implementation
 
 Parsing and Printing is expensive operation and requires a lot of code.
