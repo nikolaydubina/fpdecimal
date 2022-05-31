@@ -40,9 +40,8 @@ fmt.Println(amountToBuy)
 // Output: 18000.046
 ```
 
-### Warning
-
-* Overflows, same as `int64`
+> **Warning**
+> * Overflows, same as `int64`
 
 ### Implementation
 
