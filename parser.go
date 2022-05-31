@@ -1,14 +1,16 @@
 package fpdecimal
 
-import "errors"
-
 const sep = '.'
 
+type errorString struct{ v string }
+
+func (e *errorString) Error() string { return e.v }
+
 var (
-	errEmptyString            = errors.New("empty string")
-	errMissingDigitsAfterSign = errors.New("missing digits after sign")
-	errBadDigit               = errors.New("bad digit")
-	errMultipleDots           = errors.New("multiple dots")
+	errEmptyString            = &errorString{"empty string"}
+	errMissingDigitsAfterSign = &errorString{"missing digits after sign"}
+	errBadDigit               = &errorString{"bad digit"}
+	errMultipleDots           = &errorString{"multiple dots"}
 )
 
 // ParseFixedPointDecimal parses fixed-point decimal of p fractions into int64.

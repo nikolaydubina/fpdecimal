@@ -34,6 +34,9 @@ func FuzzParseFixedPointDecimal(f *testing.F) {
 			if v != 0 {
 				t.Errorf("has to be 0 on error")
 			}
+			if err.Error() == "" {
+				t.Error(err, err.Error())
+			}
 			return
 		}
 	})
