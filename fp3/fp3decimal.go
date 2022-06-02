@@ -33,6 +33,10 @@ func (a Decimal) Sub(b Decimal) Decimal { return Decimal{v: a.v - b.v} }
 
 func (a Decimal) Mul(b int) Decimal { return Decimal{v: a.v * int64(b)} }
 
+func (a Decimal) Div(b int) (part Decimal, remainder Decimal) {
+	return Decimal{v: a.v / int64(b)}, Decimal{v: a.v % int64(b)}
+}
+
 func (a Decimal) GreaterThan(b Decimal) bool { return a.v > b.v }
 
 func (a Decimal) LessThan(b Decimal) bool { return a.v < b.v }
@@ -47,6 +51,8 @@ func FromString(s string) (Decimal, error) {
 }
 
 func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
-	*v, err = FromString(string(b))
+	v.v, err = fpdecimal.ParseFixedPointDecimal(string(b), 3)
 	return err
 }
+
+func (v Decimal) MarshalJSON() ([]byte, error) { return []byte(v.String()), nil }

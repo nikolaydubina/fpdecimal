@@ -59,6 +59,16 @@ func FuzzArithmetics(f *testing.F) {
 				t.Error(i, a, b, fa, fb)
 			}
 		}
+
+		if b != 0 {
+			w, r := fa.Div(int(b))
+			if w != fp3.FromIntScaled(a/b) {
+				t.Error(w, a/b, a, b, fa)
+			}
+			if r != fp3.FromIntScaled(a%b) {
+				t.Error(r, a%b, a, b, fa)
+			}
+		}
 	})
 }
 
@@ -264,7 +274,48 @@ func TestUnmarshalJSON(t *testing.T) {
 	}
 }
 
-func FuzzUnmarshalJSON(f *testing.F) {
+func TestUMarshalJSON(t *testing.T) {
+	type MyType struct {
+		TeslaStockPrice fp3.Decimal `json:"tesla-stock-price"`
+	}
+
+	t.Run("when nil struct, then error", func(t *testing.T) {
+		var v *MyType
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), v)
+		if err == nil {
+			t.Error("expected error")
+		}
+	})
+
+	t.Run("when nil value, then error", func(t *testing.T) {
+		var v *fp3.Decimal
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), &v)
+		if err == nil {
+			t.Error("expected error")
+		}
+	})
+
+	t.Run("when nil const of type, then error", func(t *testing.T) {
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), (*fp3.Decimal)(nil))
+		if err == nil {
+			t.Error("expected error")
+		}
+	})
+
+	t.Run("ok", func(t *testing.T) {
+		var v MyType
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), &v)
+		if err != nil {
+			t.Error(err)
+		}
+		e := MyType{fp3.FromIntScaled(9000001)}
+		if v != e {
+			t.Error(v)
+		}
+	})
+}
+
+func FuzzJSON(f *testing.F) {
 	type MyType struct {
 		A fp3.Decimal `json:"a"`
 	}
@@ -281,8 +332,12 @@ func FuzzUnmarshalJSON(f *testing.F) {
 		f.Add(-tc)
 	}
 	f.Fuzz(func(t *testing.T, v float32) {
+		if v > math.MaxInt64/1000 || v < math.MinInt64/1000 {
+			t.Skip()
+		}
+
 		b := fmt.Sprintf("%.3f", v)
-		s := `{"a": ` + b + `}`
+		s := `{"a":` + b + `}`
 
 		var x MyType
 		err := json.Unmarshal([]byte(s), &x)
@@ -299,6 +354,14 @@ func FuzzUnmarshalJSON(f *testing.F) {
 
 		if a := x.A.String(); a != b {
 			t.Error(a, b)
+		}
+
+		ms, err := json.Marshal(x)
+		if err != nil {
+			t.Error(err)
+		}
+		if string(ms) != s {
+			t.Error(s, string(ms), x)
 		}
 	})
 }
@@ -323,6 +386,22 @@ func ExampleDecimal() {
 
 	fmt.Println(amountToBuy)
 	// Output: 18000.046
+}
+
+func ExampleDecimal_Div_remainder() {
+	x, _ := fp3.FromString("1.000")
+
+	a, r := x.Div(3)
+	fmt.Println(a, r)
+	// Output: 0.333 0.001
+}
+
+func ExampleDecimal_Div_whole() {
+	x, _ := fp3.FromString("1.000")
+
+	a, r := x.Div(5)
+	fmt.Println(a, r)
+	// Output: 0.200 0
 }
 
 func BenchmarkArithmetic(b *testing.B) {
