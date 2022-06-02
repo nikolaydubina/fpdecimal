@@ -7,7 +7,7 @@
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/avelino/awesome-go#financial)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/fpdecimal)](https://goreportcard.com/report/github.com/nikolaydubina/fpdecimal)
 
-* **Small** 100LOC
+* **Small** 200LOC
 * **Precise** `int64` inside and **does not** use `float` neither in parsing nor printing
 * **Fuzz tests** parsing, printing, arithmetics
 * **JSON** encoding/decoding
