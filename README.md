@@ -1,6 +1,6 @@
 # 🛫 Small Fixed-Point Decimals
 
-> _When you have small and simple float-like numbers. Precise and Fast. Perfect for money._
+> To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
 
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/fpdecimal.svg)](https://pkg.go.dev/github.com/nikolaydubina/fpdecimal)
@@ -39,9 +39,6 @@ if v.SP500.GreaterThan(BuySP500Price) {
 fmt.Println(amountToBuy)
 // Output: 18000.046
 ```
-
-> **Warning**
-> * Overflows, same as `int64`
 
 ### Implementation
 
