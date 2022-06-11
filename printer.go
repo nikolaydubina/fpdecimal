@@ -14,6 +14,10 @@ func FixedPointDecimalToString(v int64, p int) string {
 		return "0"
 	}
 
+	if p == 0 {
+		return strconv.FormatInt(v, 10)
+	}
+
 	// max int64: +9223372036854775.807
 	// min int64: -9223372036854775.808
 	// max bytes int64: 21

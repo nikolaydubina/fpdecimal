@@ -3,6 +3,7 @@ package fpdecimal_test
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"testing"
 
 	"github.com/nikolaydubina/fpdecimal"
@@ -52,6 +53,24 @@ func FuzzFixedPointDecimalToString(f *testing.F) {
 
 		if fs := fpdecimal.FixedPointDecimalToString(v, 3); s != fs {
 			t.Error(s, fs, f, r, v)
+		}
+	})
+}
+
+func FuzzFixedPointDecimalToString_NoFractions(f *testing.F) {
+	tests := []int64{
+		1,
+		2,
+		10,
+		12345678,
+	}
+	for _, tc := range tests {
+		f.Add(tc)
+		f.Add(-tc)
+	}
+	f.Fuzz(func(t *testing.T, r int64) {
+		if a, b := fpdecimal.FixedPointDecimalToString(r, 0), strconv.FormatInt(r, 10); a != b {
+			t.Error(a, b)
 		}
 	})
 }
