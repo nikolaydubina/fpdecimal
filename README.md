@@ -1,4 +1,4 @@
-# 🛫 Small Fixed-Point Decimals
+# 🛫 Fixed-Point Decimals
 
 > To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
 
