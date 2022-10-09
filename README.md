@@ -110,7 +110,7 @@ PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
 
-### References
+## References
 
 - [Fixed-Point Arithmetic Wiki](https://en.wikipedia.org/wiki/Fixed-point_arithmetic)
 - [shopspring/decimal](https://github.com/shopspring/decimal)
