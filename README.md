@@ -7,16 +7,16 @@
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/avelino/awesome-go#financial)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/fpdecimal)](https://goreportcard.com/report/github.com/nikolaydubina/fpdecimal)
 
-* **Small** 200LOC
-* **Precise** `int64` inside and **does not** use `float` neither in parsing nor printing
-* **Fuzz tests** parsing, printing, arithmetics
-* **JSON** encoding/decoding
-* **Fast Parsing** same as `int64`, 3x faser `float`, 20x faster [shopspring/decimal](https://github.com/shopspring/decimal), 30x faster `fmt`
-* **Fast Printing** same as `int64`
-* **Fast Arithmetics** same as `int64`
-* **Zero** overhead for arithmetic operations
-* **Zero** overhead for memory, same size as `int64`
-* **Safe** preventing error-prone fixed-point arithmetics
+* Small: 200LOC
+* Precise: `int64` inside and **does not** use `float` neither in parsing nor printing
+* Fuzz tests: parsing, printing, arithmetics
+* JSON** encoding/decoding
+* Fast Parsing: same as `int64`, 3x faser `float`, 20x faster [shopspring/decimal](https://github.com/shopspring/decimal), 30x faster `fmt`
+* Fast Printing: same as `int64`
+* Fast Arithmetics: same as `int64`
+* Zero: overhead for arithmetic operations
+* Zero: overhead for memory, same size as `int64`
+* Safe: preventing error-prone fixed-point arithmetics
 
 ```go
 var BuySP500Price = fp3.FromInt(9000)
@@ -194,3 +194,16 @@ Both of this can be addressed at compile time by providing linter.
 This can be also addressed by wrapping into a struct and defining methods.
 Formed is hard to achieve in Go, due to lack of operator overload and lots of work required to write AST parser.
 Later has been implemented in this pacakge, and, as benchmarks show, without any extra memory or calls overhead as compared to `int64`.
+
+## Appendix C: Print into destination
+
+To avoid mallocs, it is advantageous to print formatted value to pre-allocated destination.
+Similarly, to `strconv.AppendInt`, we provide `AppendFixedPointDecimal`.
+This is utilized in `github.com/nikolaydubina/fpmoney` package.
+
+```
+BenchmarkFixedPointDecimalToString/small-10    	28522474	        35.43 ns/op	      24 B/op	       1 allocs/op
+BenchmarkFixedPointDecimalToString/large-10    	36883687	        32.32 ns/op	      24 B/op	       1 allocs/op
+BenchmarkAppendFixedPointDecimal/small-10      	38105520	        30.51 ns/op	     117 B/op	       0 allocs/op
+BenchmarkAppendFixedPointDecimal/large-10      	55147478	        29.52 ns/op	     119 B/op	       0 allocs/op
+```

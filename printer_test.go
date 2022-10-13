@@ -3,6 +3,7 @@ package fpdecimal_test
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"strconv"
 	"testing"
 
@@ -59,6 +60,7 @@ func FuzzFixedPointDecimalToString(f *testing.F) {
 
 func FuzzFixedPointDecimalToString_NoFractions(f *testing.F) {
 	tests := []int64{
+		0,
 		1,
 		2,
 		10,
@@ -73,4 +75,44 @@ func FuzzFixedPointDecimalToString_NoFractions(f *testing.F) {
 			t.Error(a, b)
 		}
 	})
+}
+
+func BenchmarkFixedPointDecimalToString(b *testing.B) {
+	var s string
+	for _, tc := range testsFloats {
+		tests := make([]int64, 0, len(tc.vals))
+		for range tc.vals {
+			tests = append(tests, int64(rand.Int()))
+		}
+
+		b.ResetTimer()
+		b.Run(tc.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				s = fpdecimal.FixedPointDecimalToString(tests[n%len(tests)], 3)
+				if s == "" {
+					b.Error("empty str")
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkAppendFixedPointDecimal(b *testing.B) {
+	d := make([]byte, 0, 21)
+	for _, tc := range testsFloats {
+		tests := make([]int64, 0, len(tc.vals))
+		for range tc.vals {
+			tests = append(tests, int64(rand.Int()))
+		}
+
+		b.ResetTimer()
+		b.Run(tc.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				d = fpdecimal.AppendFixedPointDecimal(d, tests[n%len(tests)], 3)
+				if len(d) == 0 {
+					b.Error("empty str")
+				}
+			}
+		})
+	}
 }
