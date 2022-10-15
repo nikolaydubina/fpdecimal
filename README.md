@@ -7,7 +7,8 @@
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/avelino/awesome-go#financial)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/fpdecimal)](https://goreportcard.com/report/github.com/nikolaydubina/fpdecimal)
 
-* `int64` inside, does not use `float` neither in parsing nor printing
+* `int64` inside
+* does not use `float` neither in parsing nor printing
 * as fast as `int64` in parsing, printing, arithmetics — 3x faser `float`, 20x faster [shopspring/decimal](https://github.com/shopspring/decimal), 30x faster `fmt`
 * zero-overhead
 * preventing error-prone fixed-point arithmetics
