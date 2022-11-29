@@ -205,3 +205,7 @@ BenchmarkFixedPointDecimalToString/large-10    	36883687	        32.32 ns/op	   
 BenchmarkAppendFixedPointDecimal/small-10      	38105520	        30.51 ns/op	     117 B/op	       0 allocs/op
 BenchmarkAppendFixedPointDecimal/large-10      	55147478	        29.52 ns/op	     119 B/op	       0 allocs/op
 ```
+
+## Appendix D: Quotes
+
+> _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
