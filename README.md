@@ -2,6 +2,11 @@
 
 > To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
 
+
+> _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
+
+
+
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/fpdecimal.svg)](https://pkg.go.dev/github.com/nikolaydubina/fpdecimal)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/avelino/awesome-go#financial)
@@ -205,7 +210,3 @@ BenchmarkFixedPointDecimalToString/large-10    	36883687	        32.32 ns/op	   
 BenchmarkAppendFixedPointDecimal/small-10      	38105520	        30.51 ns/op	     117 B/op	       0 allocs/op
 BenchmarkAppendFixedPointDecimal/large-10      	55147478	        29.52 ns/op	     119 B/op	       0 allocs/op
 ```
-
-## Appendix D: Quotes
-
-> _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
