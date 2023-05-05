@@ -45,6 +45,7 @@ func FuzzArithmetics(f *testing.F) {
 
 			// match number
 			(a == b) == (fa == fb),
+			(a == b) == fa.Equal(fb),
 			a < b == fa.LessThan(fb),
 			a > b == fa.GreaterThan(fb),
 			a <= b == fa.LessThanOrEqual(fb),

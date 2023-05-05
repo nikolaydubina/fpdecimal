@@ -37,6 +37,8 @@ func (a Decimal) Div(b int) (part Decimal, remainder Decimal) {
 	return Decimal{v: a.v / int64(b)}, Decimal{v: a.v % int64(b)}
 }
 
+func (a Decimal) Equal(b Decimal) bool { return a.v == b.v }
+
 func (a Decimal) GreaterThan(b Decimal) bool { return a.v > b.v }
 
 func (a Decimal) LessThan(b Decimal) bool { return a.v < b.v }
