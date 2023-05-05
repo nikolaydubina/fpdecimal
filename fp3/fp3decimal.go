@@ -45,6 +45,16 @@ func (a Decimal) GreaterThanOrEqual(b Decimal) bool { return a.v >= b.v }
 
 func (a Decimal) LessThanOrEqual(b Decimal) bool { return a.v <= b.v }
 
+func (a Decimal) Compare(b Decimal) int {
+	if a.LessThan(b) {
+		return -1
+	}
+	if a.GreaterThan(b) {
+		return 1
+	}
+	return 0
+}
+
 func FromString(s string) (Decimal, error) {
 	v, err := fpdecimal.ParseFixedPointDecimal(s, 3)
 	return Decimal{v}, err
