@@ -437,3 +437,17 @@ func TestDecimalMemoryLayout(t *testing.T) {
 		t.Error(a, v)
 	}
 }
+
+func TestDecimal_Compare(t *testing.T) {
+	a, _ := fp3.FromString("1.123")
+
+	if b, _ := fp3.FromString("1.122"); a.Compare(b) != 1 {
+		t.Error(a, ">", b)
+	}
+	if b, _ := fp3.FromString("1.124"); a.Compare(b) != -1 {
+		t.Error(a, "<", b)
+	}
+	if b, _ := fp3.FromString("1.123"); a.Compare(b) != 0 {
+		t.Error(a, "==", b)
+	}
+}
