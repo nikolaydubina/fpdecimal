@@ -1,13 +1,12 @@
-package fp3
+package fpdecimal
 
 import (
-	"github.com/nikolaydubina/fpdecimal"
 	"github.com/nikolaydubina/fpdecimal/constraints"
 )
 
-// Decimal is fixed-point decimal with 3 fractions.
-// Actual value scaled by 1000x.
-// Values fit in ~9 quadrillion.
+// Decimal is a decimal with fixed number of fraction digits.
+// By default, uses 3 fractional digits.
+// For example, values with 3 fractional digits will fit in ~9 quadrillion.
 // Fractions lower than that are discarded in operations.
 // Max: +9223372036854775.807
 // Min: -9223372036854775.808
@@ -15,17 +14,33 @@ type Decimal struct{ v int64 }
 
 var Zero = Decimal{}
 
-func FromInt[T constraints.Integer](v T) Decimal { return Decimal{int64(v) * 1000} }
+var multipliers = []int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000}
 
-func FromFloat[T constraints.Float](v T) Decimal { return Decimal{int64(v * 1000)} }
+var fractionDigits int8 = 3
+
+func SetFractionDigits(fraction uint8) bool {
+	if fraction > 10 {
+		return false
+	}
+	fractionDigits = int8(fraction)
+	return true
+}
+
+func FromInt[T constraints.Integer](v T) Decimal {
+	return Decimal{int64(v) * multipliers[fractionDigits]}
+}
+
+func FromFloat[T constraints.Float](v T) Decimal {
+	return Decimal{int64(float64(v) * float64(multipliers[fractionDigits]))}
+}
 
 func FromIntScaled[T constraints.Integer](v T) Decimal { return Decimal{int64(v)} }
 
-func (a Decimal) Float32() float32 { return float32(a.v) / 1000 }
+func (a Decimal) Float32() float32 { return float32(a.v) / float32(multipliers[fractionDigits]) }
 
-func (a Decimal) Float64() float64 { return float64(a.v) / 1000 }
+func (a Decimal) Float64() float64 { return float64(a.v) / float64(multipliers[fractionDigits]) }
 
-func (a Decimal) String() string { return fpdecimal.FixedPointDecimalToString(int64(a.v), 3) }
+func (a Decimal) String() string { return FixedPointDecimalToString(a.v, int(fractionDigits)) }
 
 func (a Decimal) Add(b Decimal) Decimal { return Decimal{v: a.v + b.v} }
 
@@ -58,12 +73,12 @@ func (a Decimal) Compare(b Decimal) int {
 }
 
 func FromString(s string) (Decimal, error) {
-	v, err := fpdecimal.ParseFixedPointDecimal(s, 3)
+	v, err := ParseFixedPointDecimal(s, fractionDigits)
 	return Decimal{v}, err
 }
 
 func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
-	v.v, err = fpdecimal.ParseFixedPointDecimal(string(b), 3)
+	v.v, err = ParseFixedPointDecimal(string(b), fractionDigits)
 	return err
 }
 
