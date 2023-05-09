@@ -72,8 +72,8 @@ BenchmarkParse_float_strconv_ParseFloat/small/float32-10    342714165         17
 BenchmarkParse_float_strconv_ParseFloat/small/float64-10    335826322         18.0 ns/op        0 B/op        0 allocs/op
 BenchmarkParse_float_strconv_ParseFloat/large/float32-10    124264724         48.1 ns/op        0 B/op        0 allocs/op
 BenchmarkParse_float_strconv_ParseFloat/large/float64-10    128111449         47.3 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_float_fmt_Sscanf/small-10                    20766676        293.2 ns/op       69 B/op        2 allocs/op
-BenchmarkParse_float_fmt_Sscanf/large-10                     9707408        612.7 ns/op       88 B/op        3 allocs/op
+BenchmarkParse_float_fmt_Sscanf/small-10                     20766676        293.2 ns/op       69 B/op        2 allocs/op
+BenchmarkParse_float_fmt_Sscanf/large-10                      9707408        612.7 ns/op       88 B/op        3 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
