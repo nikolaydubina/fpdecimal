@@ -61,19 +61,19 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkParse/small-10                        	            836845129	         7.1 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse/large-10                        	            270274911	        22.2 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_int_strconv_Atoi/small-10       	           1000000000	         4.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_int_strconv_Atoi/large-10       	            415960243	        14.3 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_int_strconv_ParseInt/small/int32-10         	563149866	        10.6 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_int_strconv_ParseInt/small/int64-10         	568933998	        10.5 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_int_strconv_ParseInt/large/int64-10         	223803350	        27.3 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/small/float32-10   	342714165	        17.6 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/small/float64-10   	335826322	        18.0 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/large/float32-10   	124264724	        48.1 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/large/float64-10   	128111449	        47.3 ns/op	       0 B/op	       0 allocs/op
-BenchmarkParse_float_fmt_Sscanf/small-10                   	20766676	       293.2 ns/op	      69 B/op	       2 allocs/op
-BenchmarkParse_float_fmt_Sscanf/large-10                   	 9707408	       612.7 ns/op	      88 B/op	       3 allocs/op
+BenchmarkParse/small-10                                     836845129          7.1 ns/op        0 B/op        0 allocs/op
+BenchmarkParse/large-10                                     270274911         22.2 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_int_strconv_Atoi/small-10                   1000000000          4.8 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_int_strconv_Atoi/large-10                    415960243         14.3 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/small/int32-10          563149866         10.6 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/small/int64-10          568933998         10.5 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/large/int64-10          223803350         27.3 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/small/float32-10    342714165         17.6 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/small/float64-10    335826322         18.0 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/large/float32-10    124264724         48.1 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/large/float64-10    128111449         47.3 ns/op        0 B/op        0 allocs/op
+BenchmarkParse_float_fmt_Sscanf/small-10                    20766676        293.2 ns/op       69 B/op        2 allocs/op
+BenchmarkParse_float_fmt_Sscanf/large-10                     9707408        612.7 ns/op       88 B/op        3 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
@@ -84,17 +84,17 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkPrint/small-10                        	           214360207	        28.1 ns/op	       8 B/op	       1 allocs/op
-BenchmarkPrint/large-10                        	           181972407	        32.8 ns/op	      24 B/op	       1 allocs/op
-BenchmarkPrint_int_strconv_Itoa/small-10       	           424602669	        13.7 ns/op	       3 B/op	       0 allocs/op
-BenchmarkPrint_int_strconv_Itoa/large-10       	           215629374	        27.8 ns/op	      18 B/op	       1 allocs/op
-BenchmarkPrint_int_strconv_FormatInt/small-10              428783829	        13.7 ns/op	       3 B/op	       0 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/small/float32-10  	56737408	       106.0 ns/op	      31 B/op	       2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/small/float64-10  	43639258	       140.3 ns/op	      31 B/op	       2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/large/float32-10  	63764750	        96.5 ns/op	      48 B/op	       2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/large/float64-10  	64598815	        92.2 ns/op	      48 B/op	       2 allocs/op
-BenchmarkPrint_float_fmt_Sprintf/small-10                  	45866606	       131.7 ns/op	      16 B/op	       2 allocs/op
-BenchmarkPrint_float_fmt_Sprintf/large-10                  	49536778	       115.0 ns/op	      28 B/op	       2 allocs/op
+BenchmarkPrint/small-10                                    214360207         28.1 ns/op        8 B/op        1 allocs/op
+BenchmarkPrint/large-10                                    181972407         32.8 ns/op       24 B/op        1 allocs/op
+BenchmarkPrint_int_strconv_Itoa/small-10                   424602669         13.7 ns/op        3 B/op        0 allocs/op
+BenchmarkPrint_int_strconv_Itoa/large-10                   215629374         27.8 ns/op       18 B/op        1 allocs/op
+BenchmarkPrint_int_strconv_FormatInt/small-10              428783829         13.7 ns/op        3 B/op        0 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float32-10   56737408        106.0 ns/op       31 B/op        2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float64-10   43639258        140.3 ns/op       31 B/op        2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float32-10   63764750         96.5 ns/op       48 B/op        2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float64-10   64598815         92.2 ns/op       48 B/op        2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/small-10                   45866606        131.7 ns/op       16 B/op        2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/large-10                   49536778        115.0 ns/op       28 B/op        2 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
@@ -105,10 +105,10 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkArithmetic/add_x1-10                  1000000000	         0.31 ns/op	       0 B/op	       0 allocs/op
-BenchmarkArithmetic/add_x100-10                	185093986	        32.54 ns/op	       0 B/op	       0 allocs/op
-BenchmarkArithmetic_int64/add_x1-10            1000000000	         0.31 ns/op	       0 B/op	       0 allocs/op
-BenchmarkArithmetic_int64/add_x100-10           183007275	        32.81 ns/op	       0 B/op	       0 allocs/op
+BenchmarkArithmetic/add_x1-10                  1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic/add_x100-10                 185093986         32.54 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/add_x1-10            1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/add_x100-10           183007275         32.81 ns/op        0 B/op        0 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
@@ -205,8 +205,8 @@ Similarly, to `strconv.AppendInt`, we provide `AppendFixedPointDecimal`.
 This is utilized in `github.com/nikolaydubina/fpmoney` package.
 
 ```
-BenchmarkFixedPointDecimalToString/small-10    	28522474	        35.43 ns/op	      24 B/op	       1 allocs/op
-BenchmarkFixedPointDecimalToString/large-10    	36883687	        32.32 ns/op	      24 B/op	       1 allocs/op
-BenchmarkAppendFixedPointDecimal/small-10      	38105520	        30.51 ns/op	     117 B/op	       0 allocs/op
-BenchmarkAppendFixedPointDecimal/large-10      	55147478	        29.52 ns/op	     119 B/op	       0 allocs/op
+BenchmarkFixedPointDecimalToString/small-10     28522474         35.43 ns/op       24 B/op        1 allocs/op
+BenchmarkFixedPointDecimalToString/large-10     36883687         32.32 ns/op       24 B/op        1 allocs/op
+BenchmarkAppendFixedPointDecimal/small-10       38105520         30.51 ns/op      117 B/op        0 allocs/op
+BenchmarkAppendFixedPointDecimal/large-10       55147478         29.52 ns/op      119 B/op        0 allocs/op
 ```
