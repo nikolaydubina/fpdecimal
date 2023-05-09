@@ -1,4 +1,4 @@
-package fp3_test
+package fpdecimal_test
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/nikolaydubina/fpdecimal/fp3"
+	"github.com/nikolaydubina/fpdecimal"
 )
 
 func FuzzArithmetics(f *testing.F) {
@@ -22,26 +22,26 @@ func FuzzArithmetics(f *testing.F) {
 		f.Add(tc[0], tc[1])
 	}
 	f.Fuzz(func(t *testing.T, a, b int64) {
-		fa := fp3.FromIntScaled(a)
-		fb := fp3.FromIntScaled(b)
+		fa := fpdecimal.FromIntScaled(a)
+		fb := fpdecimal.FromIntScaled(b)
 
 		v := []bool{
 			// sum commutativity
 			fa.Add(fb) == fb.Add(fa),
 
 			// sum associativity
-			fp3.Zero.Add(fa).Add(fb).Add(fa) == fp3.Zero.Add(fb).Add(fa).Add(fa),
+			fpdecimal.Zero.Add(fa).Add(fb).Add(fa) == fpdecimal.Zero.Add(fb).Add(fa).Add(fa),
 
 			// sum zero
 			fa == fa.Add(fb).Sub(fb),
 			fa == fa.Sub(fb).Add(fb),
-			fp3.Zero == fp3.Zero.Add(fa).Sub(fa),
+			fpdecimal.Zero == fpdecimal.Zero.Add(fa).Sub(fa),
 
 			// product identity
 			fa == fa.Mul(1),
 
 			// product zero
-			fp3.Zero == fa.Mul(0),
+			fpdecimal.Zero == fa.Mul(0),
 
 			// match number
 			(a == b) == (fa == fb),
@@ -52,8 +52,8 @@ func FuzzArithmetics(f *testing.F) {
 			a >= b == fa.GreaterThanOrEqual(fb),
 
 			// match number convert
-			fp3.FromIntScaled(a+b) == fa.Add(fb),
-			fp3.FromIntScaled(a-b) == fa.Sub(fb),
+			fpdecimal.FromIntScaled(a+b) == fa.Add(fb),
+			fpdecimal.FromIntScaled(a-b) == fa.Sub(fb),
 		}
 		for i, q := range v {
 			if !q {
@@ -63,10 +63,10 @@ func FuzzArithmetics(f *testing.F) {
 
 		if b != 0 {
 			w, r := fa.Div(int(b))
-			if w != fp3.FromIntScaled(a/b) {
+			if w != fpdecimal.FromIntScaled(a/b) {
 				t.Error(w, a/b, a, b, fa)
 			}
-			if r != fp3.FromIntScaled(a%b) {
+			if r != fpdecimal.FromIntScaled(a%b) {
 				t.Error(r, a%b, a, b, fa)
 			}
 		}
@@ -103,7 +103,7 @@ func FuzzParse_StringSameAsFloat(f *testing.F) {
 
 		s := fmt.Sprintf("%.3f", r)
 
-		v, err := fp3.FromString(s)
+		v, err := fpdecimal.FromString(s)
 		if err != nil {
 			t.Errorf(err.Error())
 		}
@@ -144,9 +144,9 @@ func FuzzParse_StringRaw(f *testing.F) {
 		f.Add("-" + tc)
 	}
 	f.Fuzz(func(t *testing.T, s string) {
-		v, err := fp3.FromString(s)
+		v, err := fpdecimal.FromString(s)
 		if err != nil {
-			if v != fp3.Zero {
+			if v != fpdecimal.Zero {
 				t.Errorf("has to be 0 on error")
 			}
 			return
@@ -166,7 +166,7 @@ func FuzzToFloat(f *testing.F) {
 		f.Add(-tc)
 	}
 	f.Fuzz(func(t *testing.T, v float64) {
-		a := fp3.FromFloat(v)
+		a := fpdecimal.FromFloat(v)
 
 		if float32(v) != a.Float32() {
 			t.Error(a, a.Float32(), float32(v))
@@ -178,7 +178,7 @@ func FuzzToFloat(f *testing.F) {
 	})
 }
 
-var testsFloats = []struct {
+var floatsForTests = []struct {
 	name string
 	vals []string
 }{
@@ -206,13 +206,13 @@ var testsFloats = []struct {
 }
 
 func BenchmarkParse(b *testing.B) {
-	var s fp3.Decimal
+	var s fpdecimal.Decimal
 	var err error
-	for _, tc := range testsFloats {
+	for _, tc := range floatsForTests {
 		b.Run(tc.name, func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
-				s, err = fp3.FromString(tc.vals[n%len(tc.vals)])
-				if err != nil || s == fp3.Zero {
+				s, err = fpdecimal.FromString(tc.vals[n%len(tc.vals)])
+				if err != nil || s == fpdecimal.Zero {
 					b.Error(s, err)
 				}
 			}
@@ -222,15 +222,15 @@ func BenchmarkParse(b *testing.B) {
 
 func BenchmarkPrint(b *testing.B) {
 	var s string
-	for _, tc := range testsFloats {
-		tests := make([]fp3.Decimal, 0, len(tc.vals))
+	for _, tc := range floatsForTests {
+		tests := make([]fpdecimal.Decimal, 0, len(tc.vals))
 		for _, q := range tc.vals {
-			v, err := fp3.FromString(q)
+			v, err := fpdecimal.FromString(q)
 			if err != nil {
 				b.Error(err)
 			}
 			tests = append(tests, v)
-			tests = append(tests, fp3.Zero.Sub(v))
+			tests = append(tests, fpdecimal.Zero.Sub(v))
 		}
 
 		b.ResetTimer()
@@ -247,17 +247,17 @@ func BenchmarkPrint(b *testing.B) {
 
 func TestUnmarshalJSON(t *testing.T) {
 	type MyType struct {
-		TeslaStockPrice fp3.Decimal `json:"tesla-stock-price"`
+		TeslaStockPrice fpdecimal.Decimal `json:"tesla-stock-price"`
 	}
 
 	tests := []struct {
 		json string
-		v    fp3.Decimal
+		v    fpdecimal.Decimal
 		s    string
 	}{
 		{
 			json: `{"tesla-stock-price": 9000.001}`,
-			v:    fp3.FromFloat(9000.001),
+			v:    fpdecimal.FromFloat(9000.001),
 			s:    `9000.001`,
 		},
 	}
@@ -277,7 +277,7 @@ func TestUnmarshalJSON(t *testing.T) {
 
 func TestUMarshalJSON(t *testing.T) {
 	type MyType struct {
-		TeslaStockPrice fp3.Decimal `json:"tesla-stock-price"`
+		TeslaStockPrice fpdecimal.Decimal `json:"tesla-stock-price"`
 	}
 
 	t.Run("when nil struct, then error", func(t *testing.T) {
@@ -289,7 +289,7 @@ func TestUMarshalJSON(t *testing.T) {
 	})
 
 	t.Run("when nil value, then error", func(t *testing.T) {
-		var v *fp3.Decimal
+		var v *fpdecimal.Decimal
 		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), &v)
 		if err == nil {
 			t.Error("expected error")
@@ -297,7 +297,7 @@ func TestUMarshalJSON(t *testing.T) {
 	})
 
 	t.Run("when nil const of type, then error", func(t *testing.T) {
-		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), (*fp3.Decimal)(nil))
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), (*fpdecimal.Decimal)(nil))
 		if err == nil {
 			t.Error("expected error")
 		}
@@ -309,7 +309,7 @@ func TestUMarshalJSON(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		e := MyType{fp3.FromIntScaled(9000001)}
+		e := MyType{fpdecimal.FromIntScaled(9000001)}
 		if v != e {
 			t.Error(v)
 		}
@@ -318,7 +318,7 @@ func TestUMarshalJSON(t *testing.T) {
 
 func FuzzJSON(f *testing.F) {
 	type MyType struct {
-		A fp3.Decimal `json:"a"`
+		A fpdecimal.Decimal `json:"a"`
 	}
 
 	tests := []float32{
@@ -368,19 +368,19 @@ func FuzzJSON(f *testing.F) {
 }
 
 func ExampleDecimal() {
-	var BuySP500Price = fp3.FromInt(9000)
+	var BuySP500Price = fpdecimal.FromInt(9000)
 
 	input := []byte(`{"sp500": 9000.023}`)
 
 	type Stocks struct {
-		SP500 fp3.Decimal `json:"sp500"`
+		SP500 fpdecimal.Decimal `json:"sp500"`
 	}
 	var v Stocks
 	if err := json.Unmarshal(input, &v); err != nil {
 		log.Fatal(err)
 	}
 
-	var amountToBuy fp3.Decimal
+	var amountToBuy fpdecimal.Decimal
 	if v.SP500.GreaterThan(BuySP500Price) {
 		amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
 	}
@@ -390,7 +390,7 @@ func ExampleDecimal() {
 }
 
 func ExampleDecimal_Div_remainder() {
-	x, _ := fp3.FromString("1.000")
+	x, _ := fpdecimal.FromString("1.000")
 
 	a, r := x.Div(3)
 	fmt.Println(a, r)
@@ -398,7 +398,7 @@ func ExampleDecimal_Div_remainder() {
 }
 
 func ExampleDecimal_Div_whole() {
-	x, _ := fp3.FromString("1.000")
+	x, _ := fpdecimal.FromString("1.000")
 
 	a, r := x.Div(5)
 	fmt.Println(a, r)
@@ -406,20 +406,20 @@ func ExampleDecimal_Div_whole() {
 }
 
 func BenchmarkArithmetic(b *testing.B) {
-	x, _ := fp3.FromString("251.231")
-	y, _ := fp3.FromString("21231.001")
+	x, _ := fpdecimal.FromString("251.231")
+	y, _ := fpdecimal.FromString("21231.001")
 
-	var s fp3.Decimal
+	var s fpdecimal.Decimal
 
 	b.Run("add_x1", func(b *testing.B) {
-		s = fp3.Zero
+		s = fpdecimal.Zero
 		for n := 0; n < b.N; n++ {
 			s = x.Add(y)
 		}
 	})
 
 	b.Run("add_x100", func(b *testing.B) {
-		s = fp3.Zero
+		s = fpdecimal.Zero
 		for n := 0; n < b.N; n++ {
 			for i := 0; i < 100; i++ {
 				s = x.Add(y)
@@ -427,28 +427,62 @@ func BenchmarkArithmetic(b *testing.B) {
 		}
 	})
 
-	if s == fp3.Zero {
+	if s == fpdecimal.Zero {
 		b.Error()
 	}
 }
 
 func TestDecimalMemoryLayout(t *testing.T) {
-	a, _ := fp3.FromString("-1000.123")
+	a, _ := fpdecimal.FromString("-1000.123")
 	if v := unsafe.Sizeof(a); v != 8 {
 		t.Error(a, v)
 	}
 }
 
 func TestDecimal_Compare(t *testing.T) {
-	a, _ := fp3.FromString("1.123")
+	a, _ := fpdecimal.FromString("1.123")
 
-	if b, _ := fp3.FromString("1.122"); a.Compare(b) != 1 {
+	if b, _ := fpdecimal.FromString("1.122"); a.Compare(b) != 1 {
 		t.Error(a, ">", b)
 	}
-	if b, _ := fp3.FromString("1.124"); a.Compare(b) != -1 {
+	if b, _ := fpdecimal.FromString("1.124"); a.Compare(b) != -1 {
 		t.Error(a, "<", b)
 	}
-	if b, _ := fp3.FromString("1.123"); a.Compare(b) != 0 {
+	if b, _ := fpdecimal.FromString("1.123"); a.Compare(b) != 0 {
 		t.Error(a, "==", b)
 	}
+}
+
+func TestSetFractionDigits(t *testing.T) {
+	a, _ := fpdecimal.FromString("1.123")
+
+	if a.String() != "1.123" {
+		t.Fatal("SetFractionDigits", a.String())
+	}
+
+	fpdecimal.SetFractionDigits(5)
+	a, _ = fpdecimal.FromString("1.123456")
+
+	if a.String() != "1.12345" {
+		t.Fatal("SetFractionDigits 5", a.String())
+	}
+
+	fpdecimal.SetFractionDigits(10)
+	a, _ = fpdecimal.FromString("1.12345678910")
+
+	if a.String() != "1.1234567891" {
+		t.Fatal("SetFractionDigits 10", a.String())
+	}
+
+	if fpdecimal.SetFractionDigits(11) == true {
+		t.Fatal("SetFractionDigits > 10")
+	}
+
+	for i := 0; i <= 10; i++ {
+		if fpdecimal.SetFractionDigits(uint8(i)) != true {
+			t.Fatal("SetFractionDigits not work with", i)
+		}
+	}
+
+	fpdecimal.SetFractionDigits(3)
 }
