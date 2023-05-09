@@ -14,7 +14,7 @@ var (
 )
 
 // ParseFixedPointDecimal parses fixed-point decimal of p fractions into int64.
-func ParseFixedPointDecimal(s string, p int8) (int64, error) {
+func ParseFixedPointDecimal(s string, p uint8) (int64, error) {
 	if s == "" {
 		return 0, errEmptyString
 	}
@@ -27,10 +27,11 @@ func ParseFixedPointDecimal(s string, p int8) (int64, error) {
 		}
 	}
 
+	var pn int8 = int8(p)
 	var d int8 = -1 // current decimal position
 	var n int64     // output
 	for _, ch := range []byte(s) {
-		if d == p {
+		if d == pn {
 			break
 		}
 
@@ -57,7 +58,7 @@ func ParseFixedPointDecimal(s string, p int8) (int64, error) {
 	if d == -1 {
 		d = 0
 	}
-	for i := d; i < p; i++ {
+	for i := d; i < pn; i++ {
 		n = n * 10
 	}
 

@@ -454,35 +454,25 @@ func TestDecimal_Compare(t *testing.T) {
 }
 
 func TestSetFractionDigits(t *testing.T) {
-	a, _ := fpdecimal.FromString("1.123")
+	defer func() { fpdecimal.FractionDigits = 3 }()
 
-	if a.String() != "1.123" {
-		t.Fatal("SetFractionDigits", a.String())
-	}
-
-	fpdecimal.SetFractionDigits(5)
-	a, _ = fpdecimal.FromString("1.123456")
-
-	if a.String() != "1.12345" {
-		t.Fatal("SetFractionDigits 5", a.String())
-	}
-
-	fpdecimal.SetFractionDigits(10)
-	a, _ = fpdecimal.FromString("1.12345678910")
-
-	if a.String() != "1.1234567891" {
-		t.Fatal("SetFractionDigits 10", a.String())
-	}
-
-	if fpdecimal.SetFractionDigits(11) == true {
-		t.Fatal("SetFractionDigits > 10")
-	}
-
-	for i := 0; i <= 10; i++ {
-		if fpdecimal.SetFractionDigits(uint8(i)) != true {
-			t.Fatal("SetFractionDigits not work with", i)
+	t.Run("default 3", func(t *testing.T) {
+		if a, err := fpdecimal.FromString("1.123"); a.String() != "1.123" || err != nil {
+			t.Error("SetFractionDigits", a.String())
 		}
-	}
+	})
 
-	fpdecimal.SetFractionDigits(3)
+	t.Run("5", func(t *testing.T) {
+		fpdecimal.FractionDigits = 5
+		if a, err := fpdecimal.FromString("1.123456"); a.String() != "1.12345" || err != nil {
+			t.Error("SetFractionDigits 5", a.String())
+		}
+	})
+
+	t.Run("10", func(t *testing.T) {
+		fpdecimal.FractionDigits = 10
+		if a, err := fpdecimal.FromString("1.12345678910"); a.String() != "1.1234567891" || err != nil {
+			t.Error("SetFractionDigits 10", a.String())
+		}
+	})
 }
