@@ -27,7 +27,7 @@ func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 	}
 
 	if p == 0 {
-		return strconv.AppendInt(b, int64(v), 10)
+		return strconv.AppendInt(b, v, 10)
 	}
 
 	if v < 0 {
@@ -36,7 +36,7 @@ func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 	}
 
 	s := len(b)
-	b = strconv.AppendInt(b, int64(v), 10)
+	b = strconv.AppendInt(b, v, 10)
 
 	if len(b)-s > p {
 		i := len(b) - p
@@ -49,7 +49,7 @@ func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 			b = append(b, 0)
 		}
 		copy(b[s+i:], b[s:])
-		copy(b[s:], []byte(zeroPrefix[:i]))
+		copy(b[s:], zeroPrefix[:i])
 	}
 
 	return b

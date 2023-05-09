@@ -27,7 +27,7 @@ func ParseFixedPointDecimal(s string, p uint8) (int64, error) {
 		}
 	}
 
-	var pn int8 = int8(p)
+	var pn = int8(p)
 	var d int8 = -1 // current decimal position
 	var n int64     // output
 	for _, ch := range []byte(s) {
