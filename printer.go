@@ -49,7 +49,7 @@ func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 			b = append(b, 0)
 		}
 		copy(b[s+i:], b[s:])
-		copy(b[s:], zeroPrefix[:i])
+		copy(b[s:], []byte(zeroPrefix[:i]))
 	}
 
 	return b
