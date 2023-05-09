@@ -31,6 +31,8 @@ func FromFloat[T constraints.Float](v T) Decimal {
 
 func FromIntScaled[T constraints.Integer](v T) Decimal { return Decimal{int64(v)} }
 
+func (a Decimal) IntUnscaled() int64 { return a.v }
+
 func (a Decimal) Float32() float32 { return float32(a.v) / float32(multipliers[FractionDigits]) }
 
 func (a Decimal) Float64() float64 { return float64(a.v) / float64(multipliers[FractionDigits]) }

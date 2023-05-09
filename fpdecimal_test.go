@@ -178,6 +178,26 @@ func FuzzToFloat(f *testing.F) {
 	})
 }
 
+func FuzzToIntUnscaled(f *testing.F) {
+	tests := []float64{
+		0,
+		0.001,
+		1,
+		123.456,
+	}
+	for _, tc := range tests {
+		f.Add(tc)
+		f.Add(-tc)
+	}
+	f.Fuzz(func(t *testing.T, v float64) {
+		a := fpdecimal.FromFloat(v)
+
+		if int64(v*1000) != a.IntUnscaled() {
+			t.Error(a, a.IntUnscaled(), int64(v*1000))
+		}
+	})
+}
+
 var floatsForTests = []struct {
 	name string
 	vals []string
