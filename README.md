@@ -170,7 +170,7 @@ In one of iterations, I did Type Alias, but it required some effort to use it ca
 Operations with defined types (variables) will fail.
 ```go
 var a int64
-var b fpdecimal.FP3DecimalFromInt(1000)
+var b fpdecimal.FromInt(1000)
 
 // does not compile
 a + b
@@ -179,7 +179,7 @@ a + b
 However, untyped constants will be resolved to underlying type `int64` and will be allowed.  
 ```go
 const a 10000
-var b fpdecimal.FP3DecimalFromInt(1000)
+var b fpdecimal.FromInt(1000)
 
 // compiles
 a + b
