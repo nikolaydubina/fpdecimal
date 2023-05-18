@@ -2,10 +2,7 @@
 
 > To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
 
-
 > _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
-
-
 
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/fpdecimal.svg)](https://pkg.go.dev/github.com/nikolaydubina/fpdecimal)
@@ -22,21 +19,23 @@
 * 200LOC
 
 ```go
-var BuySP500Price = fpdecimal.FromInt(9000)
+import fp "github.com/nikolaydubina/fpdecimal"
+
+var BuySP500Price = fp.FromInt(9000)
 
 input := []byte(`{"sp500": 9000.023}`)
 
 type Stocks struct {
-    SP500 fpdecimal.Decimal `json:"sp500"`
+    SP500 fp.Decimal `json:"sp500"`
 }
 var v Stocks
 if err := json.Unmarshal(input, &v); err != nil {
     log.Fatal(err)
 }
 
-var amountToBuy fpdecimal.Decimal
+var amountToBuy fp.Decimal
 if v.SP500.GreaterThan(BuySP500Price) {
-    amountToBuy = amountToBuy.Add(v.SP500.Mul(fpdecimal.FromInt(2)))
+    amountToBuy = amountToBuy.Add(v.SP500.Mul(fp.FromInt(2)))
 }
 
 fmt.Println(amountToBuy)
@@ -105,12 +104,13 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkArithmetic/add-10                     1000000000          0.31 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic/div-10            	        962982672	       0.84 ns/op	     0 B/op	       0 allocs/op
-BenchmarkArithmetic/divmod-10         	        637345525	       1.91 ns/op	     0 B/op	       0 allocs/op
-BenchmarkArithmetic_int64/add-10               1000000000          0.31 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic_int64/div-10               1000000000	       0.31 ns/op	     0 B/op	       0 allocs/op
-BenchmarkArithmetic_int64/mod-10      	       1000000000	       0.62 ns/op	     0 B/op	       0 allocs/op
+BenchmarkArithmetic/add-10                    1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic/div-10                     962982672          0.84 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic/divmod-10                  637345525          1.91 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/add-10              1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/div-10              1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/divmod-10            784951819          1.53 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/mod-10              1000000000          0.62 ns/op        0 B/op        0 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```

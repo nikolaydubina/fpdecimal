@@ -281,6 +281,14 @@ func BenchmarkArithmetic_int64(b *testing.B) {
 		}
 	})
 
+	b.Run("divmod", func(b *testing.B) {
+		s = 0
+		for n := 0; n < b.N; n++ {
+			s += x / y
+			s += x % y
+		}
+	})
+
 	b.Run("mod", func(b *testing.B) {
 		s = 0
 		for n := 0; n < b.N; n++ {
