@@ -267,19 +267,24 @@ func BenchmarkArithmetic_int64(b *testing.B) {
 
 	var s int64
 
-	b.Run("add_x1", func(b *testing.B) {
+	b.Run("add", func(b *testing.B) {
 		s = 0
 		for n := 0; n < b.N; n++ {
 			s = x + y
 		}
 	})
 
-	b.Run("add_x100", func(b *testing.B) {
+	b.Run("div", func(b *testing.B) {
 		s = 0
 		for n := 0; n < b.N; n++ {
-			for i := 0; i < 100; i++ {
-				s = x + y
-			}
+			s = x + y
+		}
+	})
+
+	b.Run("mod", func(b *testing.B) {
+		s = 0
+		for n := 0; n < b.N; n++ {
+			s = x % y
 		}
 	})
 

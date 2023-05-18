@@ -38,10 +38,10 @@ func FuzzArithmetics(f *testing.F) {
 			fpdecimal.Zero == fpdecimal.Zero.Add(fa).Sub(fa),
 
 			// product identity
-			fa == fa.Mul(1),
+			fa == fa.Mul(fpdecimal.FromInt(1)),
 
 			// product zero
-			fpdecimal.Zero == fa.Mul(0),
+			fpdecimal.Zero == fa.Mul(fpdecimal.FromInt(0)),
 
 			// match number
 			(a == b) == (fa == fb),
@@ -62,12 +62,16 @@ func FuzzArithmetics(f *testing.F) {
 		}
 
 		if b != 0 {
-			w, r := fa.Div(int(b))
-			if w != fpdecimal.FromIntScaled(a/b) {
-				t.Error(w, a/b, a, b, fa)
+			pdiv := fa.Div(fpdecimal.FromInt(b))
+			p, r := fa.DivMod(fpdecimal.FromInt(b))
+			if p != pdiv {
+				t.Error(p, pdiv)
+			}
+			if p != fpdecimal.FromIntScaled(a/b) {
+				t.Error(a, b, p, r, a/b)
 			}
 			if r != fpdecimal.FromIntScaled(a%b) {
-				t.Error(r, a%b, a, b, fa)
+				t.Error(a, b, p, r, a%b)
 			}
 		}
 	})
@@ -402,7 +406,7 @@ func ExampleDecimal() {
 
 	var amountToBuy fpdecimal.Decimal
 	if v.SP500.GreaterThan(BuySP500Price) {
-		amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
+		amountToBuy = amountToBuy.Add(v.SP500.Mul(fpdecimal.FromInt(2)))
 	}
 
 	fmt.Println(amountToBuy)
@@ -412,7 +416,7 @@ func ExampleDecimal() {
 func ExampleDecimal_Div_remainder() {
 	x, _ := fpdecimal.FromString("1.000")
 
-	a, r := x.Div(3)
+	a, r := x.DivMod(fpdecimal.FromInt(3))
 	fmt.Println(a, r)
 	// Output: 0.333 0.001
 }
@@ -420,7 +424,7 @@ func ExampleDecimal_Div_remainder() {
 func ExampleDecimal_Div_whole() {
 	x, _ := fpdecimal.FromString("1.000")
 
-	a, r := x.Div(5)
+	a, r := x.DivMod(fpdecimal.FromInt(5))
 	fmt.Println(a, r)
 	// Output: 0.200 0
 }
@@ -429,25 +433,33 @@ func BenchmarkArithmetic(b *testing.B) {
 	x, _ := fpdecimal.FromString("251.231")
 	y, _ := fpdecimal.FromString("21231.001")
 
-	var s fpdecimal.Decimal
+	var s, u fpdecimal.Decimal
 
-	b.Run("add_x1", func(b *testing.B) {
+	u = fpdecimal.FromInt(5)
+
+	b.Run("add", func(b *testing.B) {
 		s = fpdecimal.Zero
 		for n := 0; n < b.N; n++ {
 			s = x.Add(y)
 		}
 	})
 
-	b.Run("add_x100", func(b *testing.B) {
+	b.Run("div", func(b *testing.B) {
 		s = fpdecimal.Zero
 		for n := 0; n < b.N; n++ {
-			for i := 0; i < 100; i++ {
-				s = x.Add(y)
-			}
+			s = x.Div(y)
 		}
 	})
 
-	if s == fpdecimal.Zero {
+	b.Run("divmod", func(b *testing.B) {
+		s = fpdecimal.Zero
+		u = fpdecimal.Zero
+		for n := 0; n < b.N; n++ {
+			s, u = x.DivMod(y)
+		}
+	})
+
+	if s == fpdecimal.Zero || u == fpdecimal.Zero {
 		b.Error()
 	}
 }

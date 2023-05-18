@@ -43,10 +43,14 @@ func (a Decimal) Add(b Decimal) Decimal { return Decimal{v: a.v + b.v} }
 
 func (a Decimal) Sub(b Decimal) Decimal { return Decimal{v: a.v - b.v} }
 
-func (a Decimal) Mul(b int) Decimal { return Decimal{v: a.v * int64(b)} }
+func (a Decimal) Mul(b Decimal) Decimal { return Decimal{v: a.v * b.v / multipliers[FractionDigits]} }
 
-func (a Decimal) Div(b int) (part Decimal, remainder Decimal) {
-	return Decimal{v: a.v / int64(b)}, Decimal{v: a.v % int64(b)}
+func (a Decimal) Div(b Decimal) Decimal { return Decimal{v: a.v * multipliers[FractionDigits] / b.v} }
+
+func (a Decimal) DivMod(b Decimal) (part Decimal, remainder Decimal) {
+	// reduce divisor to avoid overflow of a at larger values
+	k := b.v / multipliers[FractionDigits]
+	return Decimal{v: a.v / k}, Decimal{v: a.v % k}
 }
 
 func (a Decimal) Equal(b Decimal) bool { return a.v == b.v }
