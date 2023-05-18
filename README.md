@@ -2,10 +2,7 @@
 
 > To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
 
-
 > _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
-
-
 
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/fpdecimal.svg)](https://pkg.go.dev/github.com/nikolaydubina/fpdecimal)
@@ -22,21 +19,23 @@
 * 200LOC
 
 ```go
-var BuySP500Price = fpdecimal.FromInt(9000)
+import fp "github.com/nikolaydubina/fpdecimal"
+
+var BuySP500Price = fp.FromInt(9000)
 
 input := []byte(`{"sp500": 9000.023}`)
 
 type Stocks struct {
-    SP500 fpdecimal.Decimal `json:"sp500"`
+    SP500 fp.Decimal `json:"sp500"`
 }
 var v Stocks
 if err := json.Unmarshal(input, &v); err != nil {
     log.Fatal(err)
 }
 
-var amountToBuy fpdecimal.Decimal
+var amountToBuy fp.Decimal
 if v.SP500.GreaterThan(BuySP500Price) {
-    amountToBuy = amountToBuy.Add(v.SP500.Mul(2))
+    amountToBuy = amountToBuy.Add(v.SP500.Mul(fp.FromInt(2)))
 }
 
 fmt.Println(amountToBuy)
@@ -105,10 +104,13 @@ $ go test -bench=. -benchtime=5s -benchmem ./...
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkArithmetic/add_x1-10                  1000000000          0.31 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic/add_x100-10                 185093986         32.54 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic_int64/add_x1-10            1000000000          0.31 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic_int64/add_x100-10           183007275         32.81 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic/add-10                    1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic/div-10                     962982672          0.84 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic/divmod-10                  637345525          1.91 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/add-10              1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/div-10              1000000000          0.31 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/divmod-10            784951819          1.53 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic_int64/mod-10              1000000000          0.62 ns/op        0 B/op        0 allocs/op
 PASS
 ok      github.com/nikolaydubina/fpdecimal    194.558s
 ```
@@ -209,4 +211,49 @@ BenchmarkFixedPointDecimalToString/small-10     28522474         35.43 ns/op    
 BenchmarkFixedPointDecimalToString/large-10     36883687         32.32 ns/op       24 B/op        1 allocs/op
 BenchmarkAppendFixedPointDecimal/small-10       38105520         30.51 ns/op      117 B/op        0 allocs/op
 BenchmarkAppendFixedPointDecimal/large-10       55147478         29.52 ns/op      119 B/op        0 allocs/op
+```
+
+## Appendix D: DivMod notation
+
+In early versions, `Div` and `Mul` operated on `int` and `Div` returned remainder.
+As recommended by @vanodevium and more in line with other common libraries, notation is changed.
+Bellow is survey as of 2023-05-18.
+
+Go, https://pkg.go.dev/math/big
+```go
+func (z *Int) Div(x, y *Int) *Int
+func (z *Int) DivMod(x, y, m *Int) (*Int, *Int)
+func (z *Int) Mod(x, y *Int) *Int
+```
+
+Go, github.com/shopspring/decimal
+```go
+func (d Decimal) Div(d2 Decimal) Decimal
+// X no DivMod
+func (d Decimal) Mod(d2 Decimal) Decimal
+func (d Decimal) DivRound(d2 Decimal, precision int32) Decimal
+```
+
+Python, https://docs.python.org/3/library/decimal.html
+```python
+divide(x, y) number
+divide_int(x, y) number // truncates
+divmod(x, y) number
+remainder(x, y) number
+```
+
+Pytorch, https://pytorch.org/docs/stable/generated/torch.div.html
+```python
+torch.div(input, other, *, rounding_mode=None, out=None) → [Tensor] // discards remainder
+torch.remainder(input, other, *, out=None) → [Tensor] // remainder
+```
+
+numpy, https://numpy.org/doc/stable/reference/generated/numpy.divmod.html
+```python
+np.divmod(x, y) (number, number) // is equivalent to (x // y, x % y
+np.mod(x, y) number
+np.remainder(x, y) number
+np.divide(x, y) number
+np.true_divide(x, y) number // same as divide
+np.floor_divide(x, y) number // rounding down
 ```
