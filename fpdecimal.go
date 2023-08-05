@@ -1,9 +1,5 @@
 package fpdecimal
 
-import (
-	"github.com/nikolaydubina/fpdecimal/constraints"
-)
-
 // Decimal is a decimal with fixed number of fraction digits.
 // By default, uses 3 fractional digits.
 // For example, values with 3 fractional digits will fit in ~9 quadrillion.
@@ -21,15 +17,15 @@ var multipliers = []int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 10
 // Likely you want to use this once per runtime and in `func init()`.
 var FractionDigits uint8 = 3
 
-func FromInt[T constraints.Integer](v T) Decimal {
+func FromInt[T ~int | ~int8 | ~int16 | ~int32 | ~int64](v T) Decimal {
 	return Decimal{int64(v) * multipliers[FractionDigits]}
 }
 
-func FromFloat[T constraints.Float](v T) Decimal {
+func FromFloat[T ~float32 | ~float64](v T) Decimal {
 	return Decimal{int64(float64(v) * float64(multipliers[FractionDigits]))}
 }
 
-func FromIntScaled[T constraints.Integer](v T) Decimal { return Decimal{int64(v)} }
+func FromIntScaled[T ~int | ~int8 | ~int16 | ~int32 | ~int64](v T) Decimal { return Decimal{int64(v)} }
 
 func (a Decimal) Scaled() int64 { return a.v }
 
