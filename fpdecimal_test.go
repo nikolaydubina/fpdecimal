@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"strconv"
 	"testing"
 	"unsafe"
 
@@ -78,7 +79,7 @@ func FuzzArithmetics(f *testing.F) {
 }
 
 func FuzzParse_StringSameAsFloat(f *testing.F) {
-	tests := []float32{
+	tests := []float64{
 		0,
 		0.100,
 		0.101,
@@ -100,27 +101,28 @@ func FuzzParse_StringSameAsFloat(f *testing.F) {
 		f.Add(tc)
 		f.Add(-tc)
 	}
-	f.Fuzz(func(t *testing.T, r float32) {
+	f.Fuzz(func(t *testing.T, r float64) {
 		if r > math.MaxInt64/1000 || r < math.MinInt64/1000 {
 			t.Skip()
 		}
 
 		s := fmt.Sprintf("%.3f", r)
+		rs, _ := strconv.ParseFloat(s, 64)
 
 		v, err := fp.FromString(s)
 		if err != nil {
-			t.Errorf(err.Error())
+			t.Error(err)
 		}
 
-		if s == "-0.000" || s == "0.000" || r == 0 || r == -0 {
+		if s == "-0.000" || s == "0.000" || rs == 0 || rs == -0 || (rs > -0.001 && rs < 0.001) {
 			if v.String() != "0" {
 				t.Errorf("s('0') != Decimal.String(%#v) of fp3(%#v) float32(%#v) .3f-float32(%#v)", v.String(), v, r, s)
 			}
 			return
 		}
 
-		if s != v.String() {
-			t.Errorf("s(%#v) != Decimal.String(%#v) of fp3(%#v) float32(%#v)", s, v.String(), v, r)
+		if s, fs := strconv.FormatFloat(rs, 'f', -1, 64), v.String(); s != fs {
+			t.Error(s, fs, r, v)
 		}
 	})
 }
@@ -362,7 +364,8 @@ func FuzzJSON(f *testing.F) {
 		}
 
 		b := fmt.Sprintf("%.3f", v)
-		s := `{"a":` + b + `}`
+		rs, _ := strconv.ParseFloat(b, 64)
+		s := `{"a":` + strconv.FormatFloat(rs, 'f', -1, 64) + `}`
 
 		var x MyType
 		err := json.Unmarshal([]byte(s), &x)
@@ -370,14 +373,14 @@ func FuzzJSON(f *testing.F) {
 			t.Error(err, s)
 		}
 
-		if b == "-0.000" || b == "0.000" || v == 0 || v == -0 {
+		if b == "-0.000" || b == "0.000" || rs == 0 || rs == -0 || (rs > 0.001 && rs < 0.001) {
 			if x.A.String() != "0" {
 				t.Error(b, x)
 			}
 			return
 		}
 
-		if a := x.A.String(); a != b {
+		if a := x.A.String(); a != strconv.FormatFloat(rs, 'f', -1, 64) {
 			t.Error(a, b)
 		}
 
@@ -413,6 +416,18 @@ func ExampleDecimal() {
 	// Output: 18000.046
 }
 
+func ExampleDecimal_skip_whole_fraction() {
+	v, _ := fp.FromString("1013.0000")
+	fmt.Println(v)
+	// Output: 1013
+}
+
+func ExampleDecimal_skip_trailing_zeros() {
+	v, _ := fp.FromString("102.0020")
+	fmt.Println(v)
+	// Output: 102.002
+}
+
 func ExampleDecimal_Div_remainder() {
 	x, _ := fp.FromString("1.000")
 
@@ -426,7 +441,7 @@ func ExampleDecimal_Div_whole() {
 
 	a, r := x.DivMod(fp.FromInt(5))
 	fmt.Println(a, r)
-	// Output: 0.200 0
+	// Output: 0.2 0
 }
 
 func BenchmarkArithmetic(b *testing.B) {

@@ -11,7 +11,7 @@ import (
 )
 
 func FuzzFixedPointDecimalToString(f *testing.F) {
-	tests := []float32{
+	tests := []float64{
 		0,
 		0.100,
 		0.101,
@@ -33,27 +33,28 @@ func FuzzFixedPointDecimalToString(f *testing.F) {
 		f.Add(tc)
 		f.Add(-tc)
 	}
-	f.Fuzz(func(t *testing.T, r float32) {
+	f.Fuzz(func(t *testing.T, r float64) {
 		if r > math.MaxInt64/1000 || r < math.MinInt64/1000 {
 			t.Skip()
 		}
 
 		s := fmt.Sprintf("%.3f", r)
+		rs, _ := strconv.ParseFloat(s, 64)
 
 		v, err := fpdecimal.ParseFixedPointDecimal(s, 3)
 		if err != nil {
 			t.Errorf(err.Error())
 		}
 
-		if s == "-0.000" || s == "0.000" || r == 0 || r == -0 {
+		if s == "-0.000" || s == "0.000" || rs == 0 || rs == -0 || (rs > -0.001 && rs < 0.001) {
 			if q := fpdecimal.FixedPointDecimalToString(v, 3); q != "0" {
 				t.Error(r, s, q)
 			}
 			return
 		}
 
-		if fs := fpdecimal.FixedPointDecimalToString(v, 3); s != fs {
-			t.Error(s, fs, f, r, v)
+		if s, fs := strconv.FormatFloat(rs, 'f', -1, 64), fpdecimal.FixedPointDecimalToString(v, 3); s != fs {
+			t.Error(s, fs, r, v)
 		}
 	})
 }

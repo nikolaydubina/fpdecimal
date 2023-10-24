@@ -19,8 +19,6 @@ func FixedPointDecimalToString(v int64, p int) string {
 // AppendFixedPointDecimal appends formatted fixed point decimal to destination buffer.
 // Returns appended slice.
 // This is efficient for avoiding memory copy.
-// strconv.AppendInt is very efficient.
-// Efficient converting int64 to ASCII is not as trivial.
 func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 	if v == 0 {
 		return append(b, '0')
@@ -35,15 +33,20 @@ func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 		b = append(b, '-')
 	}
 
+	// strconv.AppendInt is very efficient.
+	// Efficient converting int64 to ASCII is not as trivial.
 	s := len(b)
 	b = strconv.AppendInt(b, v, 10)
 
+	// has whole?
 	if len(b)-s > p {
+		// place decimal point
 		i := len(b) - p
 		b = append(b, 0)
 		copy(b[i+1:], b[i:])
 		b[i] = '.'
 	} else {
+		// append zeroes and decimal point
 		i := 2 + p - (len(b) - s)
 		for j := 0; j < i; j++ {
 			b = append(b, 0)
@@ -51,6 +54,18 @@ func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 		copy(b[s+i:], b[s:])
 		copy(b[s:], []byte(zeroPrefix[:i]))
 	}
+
+	// remove trailing zeros
+	n := 0
+	for i, q := range b {
+		if q != '0' {
+			n = i
+		}
+	}
+	if b[n] == '.' {
+		n--
+	}
+	b = b[:n+1]
 
 	return b
 }
