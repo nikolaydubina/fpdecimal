@@ -257,3 +257,8 @@ np.divide(x, y) number
 np.true_divide(x, y) number // same as divide
 np.floor_divide(x, y) number // rounding down
 ```
+
+## Appendix E: generics switch for decimal counting
+
+Go does not support numerics in templates. However, defining multiple types each associated with specific number of decimals and passing them to functions and defining constraint as union of these types — is an attractive option.
+This does not work well since Go does not support switch case (casting generic) back to integer well.
