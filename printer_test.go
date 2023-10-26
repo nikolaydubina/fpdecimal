@@ -41,7 +41,7 @@ func FuzzFixedPointDecimalToString(f *testing.F) {
 		s := fmt.Sprintf("%.3f", r)
 		rs, _ := strconv.ParseFloat(s, 64)
 
-		v, err := fpdecimal.ParseFixedPointDecimal(s, 3)
+		v, err := fpdecimal.ParseFixedPointDecimal([]byte(s), 3)
 		if err != nil {
 			t.Errorf(err.Error())
 		}

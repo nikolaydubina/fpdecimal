@@ -56,63 +56,65 @@ It is wrapped into struct to prevent bugs:
 
 Parse
 ```
-$ go test -bench=. -benchtime=5s -benchmem ./...
+$ go test -bench=BenchmarkParse -benchtime=5s -benchmem .
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkParse/small-10                                     836845129          7.1 ns/op        0 B/op        0 allocs/op
-BenchmarkParse/large-10                                     270274911         22.2 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_int_strconv_Atoi/small-10                   1000000000          4.8 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_int_strconv_Atoi/large-10                    415960243         14.3 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_int_strconv_ParseInt/small/int32-10          563149866         10.6 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_int_strconv_ParseInt/small/int64-10          568933998         10.5 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_int_strconv_ParseInt/large/int64-10          223803350         27.3 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/small/float32-10    342714165         17.6 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/small/float64-10    335826322         18.0 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/large/float32-10    124264724         48.1 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_float_strconv_ParseFloat/large/float64-10    128111449         47.3 ns/op        0 B/op        0 allocs/op
-BenchmarkParse_float_fmt_Sscanf/small-10                     20766676        293.2 ns/op       69 B/op        2 allocs/op
-BenchmarkParse_float_fmt_Sscanf/large-10                      9707408        612.7 ns/op       88 B/op        3 allocs/op
+BenchmarkParse/fromString/small-10                             534307098            11.36 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/fromString/large-10                             254741558            23.42 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/UnmarshalJSON/small-10                          816873427             7.32 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/UnmarshalJSON/large-10                          272173255            22.16 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_Atoi/small-10                      1000000000             4.87 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_Atoi/large-10                       420536834            14.31 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/small/int32-10             561137575            10.67 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/small/int64-10             564200026            10.64 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_int_strconv_ParseInt/large/int64-10             219626983            27.17 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/small/float32-10       345666214            17.36 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/small/float64-10       339620222            17.68 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/large/float32-10       128824344            46.68 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_strconv_ParseFloat/large/float64-10       128140617            46.89 ns/op           0 B/op           0 allocs/op
+BenchmarkParse_float_fmt_Sscanf/small-10                        21202892           281.6  ns/op          69 B/op           2 allocs/op
+BenchmarkParse_float_fmt_Sscanf/large-10                        10074237           599.2  ns/op          88 B/op           3 allocs/op
 PASS
-ok      github.com/nikolaydubina/fpdecimal    194.558s
+ok      github.com/nikolaydubina/fpdecimal    116.249s
 ```
 
 Print
 ```
-$ go test -bench=. -benchtime=5s -benchmem ./...
+$ go test -bench=BenchmarkPrint -benchtime=5s -benchmem .
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkPrint/small-10                                    214360207         28.1 ns/op        8 B/op        1 allocs/op
-BenchmarkPrint/large-10                                    181972407         32.8 ns/op       24 B/op        1 allocs/op
-BenchmarkPrint_int_strconv_Itoa/small-10                   424602669         13.7 ns/op        3 B/op        0 allocs/op
-BenchmarkPrint_int_strconv_Itoa/large-10                   215629374         27.8 ns/op       18 B/op        1 allocs/op
-BenchmarkPrint_int_strconv_FormatInt/small-10              428783829         13.7 ns/op        3 B/op        0 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/small/float32-10   56737408        106.0 ns/op       31 B/op        2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/small/float64-10   43639258        140.3 ns/op       31 B/op        2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/large/float32-10   63764750         96.5 ns/op       48 B/op        2 allocs/op
-BenchmarkPrint_float_strconv_FormatFloat/large/float64-10   64598815         92.2 ns/op       48 B/op        2 allocs/op
-BenchmarkPrint_float_fmt_Sprintf/small-10                   45866606        131.7 ns/op       16 B/op        2 allocs/op
-BenchmarkPrint_float_fmt_Sprintf/large-10                   49536778        115.0 ns/op       28 B/op        2 allocs/op
+BenchmarkPrint/small-10                                      191982066            31.24 ns/op           8 B/op           1 allocs/op
+BenchmarkPrint/large-10                                      150874335            39.89 ns/op          24 B/op           1 allocs/op
+BenchmarkPrint_int_strconv_Itoa/small-10                     446302868            13.39 ns/op           3 B/op           0 allocs/op
+BenchmarkPrint_int_strconv_Itoa/large-10                     237484774            25.20 ns/op          18 B/op           1 allocs/op
+BenchmarkPrint_int_strconv_FormatInt/small-10                444861666            13.70 ns/op           3 B/op           0 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float32-10     55003357           104.2  ns/op          31 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/small/float64-10     43565430           137.4  ns/op          31 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float32-10     64069650            92.07 ns/op          48 B/op           2 allocs/op
+BenchmarkPrint_float_strconv_FormatFloat/large/float64-10     68441746            87.36 ns/op          48 B/op           2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/small-10                     46503666           127.7  ns/op          16 B/op           2 allocs/op
+BenchmarkPrint_float_fmt_Sprintf/large-10                     51764224           115.8  ns/op          28 B/op           2 allocs/op
 PASS
-ok      github.com/nikolaydubina/fpdecimal    194.558s
+ok      github.com/nikolaydubina/fpdecimal    79.192s
 ```
 
 Arithmetics
 ```
-$ go test -bench=. -benchtime=5s -benchmem ./...
+$ go test -bench=BenchmarkArithmetic -benchtime=5s -benchmem .
 goos: darwin
 goarch: arm64
 pkg: github.com/nikolaydubina/fpdecimal
-BenchmarkArithmetic/add-10                    1000000000          0.31 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic/div-10                     962982672          0.84 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic/divmod-10                  637345525          1.91 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic_int64/add-10              1000000000          0.31 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic_int64/div-10              1000000000          0.31 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic_int64/divmod-10            784951819          1.53 ns/op        0 B/op        0 allocs/op
-BenchmarkArithmetic_int64/mod-10              1000000000          0.62 ns/op        0 B/op        0 allocs/op
+BenchmarkArithmetic/add-10                   1000000000             0.316 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic/div-10                   1000000000             0.950 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic/divmod-10                1000000000             1.890 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic_int64/add-10             1000000000             0.314 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic_int64/div-10             1000000000             0.316 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic_int64/divmod-10          1000000000             1.261 ns/op           0 B/op           0 allocs/op
+BenchmarkArithmetic_int64/mod-10             1000000000             0.628 ns/op           0 B/op           0 allocs/op
 PASS
-ok      github.com/nikolaydubina/fpdecimal    194.558s
+ok      github.com/nikolaydubina/fpdecimal    6.721s
 ```
 
 ## References
@@ -262,3 +264,25 @@ np.floor_divide(x, y) number // rounding down
 
 Go does not support numerics in templates. However, defining multiple types each associated with specific number of decimals and passing them to functions and defining constraint as union of these types — is an attractive option.
 This does not work well since Go does not support switch case (casting generic) back to integer well.
+
+## Appendix F: `string` vs `[]byte` in interface
+
+The typical usage of parsing number is through some JSON or other mechanism. Those APIs are dealing with `[]byte`.
+Now, conversion from `[]byte` to `string` requires to copy data, since `string` is immutable.
+To improve performance, we are using `[]byte` in signatures.
+
+Using `string`
+```
+BenchmarkParse/fromString/small-10                 831217767             7.07 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/fromString/large-10                 275009497            21.79 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/UnmarshalJSON/small-10              553035127            10.98 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/UnmarshalJSON/large-10              248815030            24.14 ns/op           0 B/op           0 allocs/op
+```
+
+Using `[]byte`
+```
+BenchmarkParse/fromString/small-10                 523937236            11.32 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/fromString/large-10                 257542226            23.23 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/UnmarshalJSON/small-10              809793006             7.31 ns/op           0 B/op           0 allocs/op
+BenchmarkParse/UnmarshalJSON/large-10              272087984            22.04 ns/op           0 B/op           0 allocs/op
+```

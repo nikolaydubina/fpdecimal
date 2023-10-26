@@ -33,7 +33,7 @@ func (a Decimal) Float32() float32 { return float32(a.v) / float32(multipliers[F
 
 func (a Decimal) Float64() float64 { return float64(a.v) / float64(multipliers[FractionDigits]) }
 
-func (a Decimal) String() string { return FixedPointDecimalToString(a.v, int(FractionDigits)) }
+func (a Decimal) String() string { return FixedPointDecimalToString(a.v, FractionDigits) }
 
 func (a Decimal) Add(b Decimal) Decimal { return Decimal{v: a.v + b.v} }
 
@@ -43,7 +43,7 @@ func (a Decimal) Mul(b Decimal) Decimal { return Decimal{v: a.v * b.v / multipli
 
 func (a Decimal) Div(b Decimal) Decimal { return Decimal{v: a.v * multipliers[FractionDigits] / b.v} }
 
-func (a Decimal) DivMod(b Decimal) (part Decimal, remainder Decimal) {
+func (a Decimal) DivMod(b Decimal) (part, remainder Decimal) {
 	// reduce divisor to avoid overflow of a at larger values
 	k := b.v / multipliers[FractionDigits]
 	return Decimal{v: a.v / k}, Decimal{v: a.v % k}
@@ -70,12 +70,12 @@ func (a Decimal) Compare(b Decimal) int {
 }
 
 func FromString(s string) (Decimal, error) {
-	v, err := ParseFixedPointDecimal(s, FractionDigits)
+	v, err := ParseFixedPointDecimal([]byte(s), FractionDigits)
 	return Decimal{v}, err
 }
 
 func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
-	v.v, err = ParseFixedPointDecimal(string(b), FractionDigits)
+	v.v, err = ParseFixedPointDecimal(b, FractionDigits)
 	return err
 }
 

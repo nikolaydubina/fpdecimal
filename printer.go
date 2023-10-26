@@ -7,7 +7,7 @@ import (
 const zeroPrefix = "0.000000000000000000000000000000000000"
 
 // FixedPointDecimalToString formats fixed-point decimal to string
-func FixedPointDecimalToString(v int64, p int) string {
+func FixedPointDecimalToString(v int64, p uint8) string {
 	// max int64: +9223372036854775.807
 	// min int64: -9223372036854775.808
 	// max bytes int64: 21
@@ -19,7 +19,7 @@ func FixedPointDecimalToString(v int64, p int) string {
 // AppendFixedPointDecimal appends formatted fixed point decimal to destination buffer.
 // Returns appended slice.
 // This is efficient for avoiding memory copy.
-func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
+func AppendFixedPointDecimal(b []byte, v int64, p uint8) []byte {
 	if v == 0 {
 		return append(b, '0')
 	}
@@ -35,20 +35,20 @@ func AppendFixedPointDecimal(b []byte, v int64, p int) []byte {
 
 	// strconv.AppendInt is very efficient.
 	// Efficient converting int64 to ASCII is not as trivial.
-	s := len(b)
+	s := uint8(len(b))
 	b = strconv.AppendInt(b, v, 10)
 
 	// has whole?
-	if len(b)-s > p {
+	if uint8(len(b))-s > p {
 		// place decimal point
-		i := len(b) - p
+		i := uint8(len(b)) - p
 		b = append(b, 0)
 		copy(b[i+1:], b[i:])
 		b[i] = '.'
 	} else {
 		// append zeroes and decimal point
-		i := 2 + p - (len(b) - s)
-		for j := 0; j < i; j++ {
+		i := 2 + p - (uint8(len(b)) - s)
+		for j := uint8(0); j < i; j++ {
 			b = append(b, 0)
 		}
 		copy(b[s+i:], b[s:])
