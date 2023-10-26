@@ -202,7 +202,7 @@ This can be also addressed by wrapping into a struct and defining methods.
 Formed is hard to achieve in Go, due to lack of operator overload and lots of work required to write AST parser.
 Later has been implemented in this pacakge, and, as benchmarks show, without any extra memory or calls overhead as compared to `int64`.
 
-## Appendix C: Print into destination
+## Appendix E: Print into destination
 
 To avoid mallocs, it is advantageous to print formatted value to pre-allocated destination.
 Similarly, to `strconv.AppendInt`, we provide `AppendFixedPointDecimal`.
@@ -215,7 +215,7 @@ BenchmarkAppendFixedPointDecimal/small-10       38105520         30.51 ns/op    
 BenchmarkAppendFixedPointDecimal/large-10       55147478         29.52 ns/op      119 B/op        0 allocs/op
 ```
 
-## Appendix D: DivMod notation
+## Appendix F: DivMod notation
 
 In early versions, `Div` and `Mul` operated on `int` and `Div` returned remainder.
 As recommended by @vanodevium and more in line with other common libraries, notation is changed.
@@ -260,12 +260,12 @@ np.true_divide(x, y) number // same as divide
 np.floor_divide(x, y) number // rounding down
 ```
 
-## Appendix E: generics switch for decimal counting
+## Appendix G: generics switch for decimal counting
 
 Go does not support numerics in templates. However, defining multiple types each associated with specific number of decimals and passing them to functions and defining constraint as union of these types — is an attractive option.
 This does not work well since Go does not support switch case (casting generic) back to integer well.
 
-## Appendix F: `string` vs `[]byte` in interface
+## Appendix H: `string` vs `[]byte` in interface
 
 The typical usage of parsing number is through some JSON or other mechanism. Those APIs are dealing with `[]byte`.
 Now, conversion from `[]byte` to `string` requires to copy data, since `string` is immutable.
