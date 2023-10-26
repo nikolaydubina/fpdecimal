@@ -234,16 +234,38 @@ var floatsForTests = []struct {
 func BenchmarkParse(b *testing.B) {
 	var s fp.Decimal
 	var err error
-	for _, tc := range floatsForTests {
-		b.Run(tc.name, func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
-				s, err = fp.FromString(tc.vals[n%len(tc.vals)])
-				if err != nil || s == fp.Zero {
-					b.Error(s, err)
+
+	b.Run("fromString", func(b *testing.B) {
+		for _, tc := range floatsForTests {
+			b.ResetTimer()
+			b.Run(tc.name, func(b *testing.B) {
+				for n := 0; n < b.N; n++ {
+					s, err = fp.FromString(tc.vals[n%len(tc.vals)])
+					if err != nil || s == fp.Zero {
+						b.Error(s, err)
+					}
 				}
+			})
+		}
+	})
+
+	b.Run("UnmarshalJSON", func(b *testing.B) {
+		for _, tc := range floatsForTests {
+			var vals [][]byte
+			for i := range tc.vals {
+				vals = append(vals, []byte(tc.vals[i]))
 			}
-		})
-	}
+
+			b.ResetTimer()
+			b.Run(tc.name, func(b *testing.B) {
+				for n := 0; n < b.N; n++ {
+					if err = s.UnmarshalJSON(vals[n%len(vals)]); err != nil || s == fp.Zero {
+						b.Error(s, err)
+					}
+				}
+			})
+		}
+	})
 }
 
 func BenchmarkPrint(b *testing.B) {
@@ -259,14 +281,28 @@ func BenchmarkPrint(b *testing.B) {
 			tests = append(tests, fp.Zero.Sub(v))
 		}
 
-		b.ResetTimer()
-		b.Run(tc.name, func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
-				s = tests[n%len(tc.vals)].String()
-				if s == "" {
-					b.Error("empty str")
+		b.Run("String", func(b *testing.B) {
+			b.ResetTimer()
+			b.Run(tc.name, func(b *testing.B) {
+				for n := 0; n < b.N; n++ {
+					s = tests[n%len(tc.vals)].String()
+					if s == "" {
+						b.Error("empty str")
+					}
 				}
-			}
+			})
+		})
+
+		b.Run("Marshal", func(b *testing.B) {
+			b.ResetTimer()
+			b.Run(tc.name, func(b *testing.B) {
+				for n := 0; n < b.N; n++ {
+					s = tests[n%len(tc.vals)].String()
+					if s == "" {
+						b.Error("empty str")
+					}
+				}
+			})
 		})
 	}
 }

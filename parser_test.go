@@ -29,7 +29,7 @@ func FuzzParseFixedPointDecimal(f *testing.F) {
 		f.Add("-" + tc)
 	}
 	f.Fuzz(func(t *testing.T, s string) {
-		v, err := fpdecimal.ParseFixedPointDecimal(s, 3)
+		v, err := fpdecimal.ParseFixedPointDecimal([]byte(s), 3)
 		if err != nil {
 			if v != 0 {
 				t.Errorf("has to be 0 on error")
