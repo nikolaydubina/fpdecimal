@@ -468,56 +468,89 @@ func ExampleDecimal_skip_trailing_zeros() {
 
 func ExampleDecimal_Div() {
 	x, _ := fp.FromString("1.000")
-	fmt.Print(x.Div(fp.FromInt(3)))
+	p := x.Div(fp.FromInt(3))
+	fmt.Print(p)
 	// Output: 0.333
 }
 
 func ExampleDecimal_Div_whole() {
 	x, _ := fp.FromString("1.000")
-	fmt.Print(x.Div(fp.FromInt(5)))
+	p := x.Div(fp.FromInt(5))
+	fmt.Print(p)
 	// Output: 0.2
 }
 
 func ExampleDecimal_Mod() {
 	x, _ := fp.FromString("1.000")
-	fmt.Print(x.Mod(fp.FromInt(3)))
+	m := x.Mod(fp.FromInt(3))
+	fmt.Print(m)
 	// Output: 0.001
 }
 
 func ExampleDecimal_DivMod() {
 	x, _ := fp.FromString("1.000")
-	fmt.Print(x.DivMod(fp.FromInt(3)))
+	p, m := x.DivMod(fp.FromInt(3))
+	fmt.Print(p, m)
 	// Output: 0.333 0.001
 }
 
 func ExampleDecimal_DivMod_whole() {
 	x, _ := fp.FromString("1.000")
-	fmt.Print(x.DivMod(fp.FromInt(5)))
+	p, m := x.DivMod(fp.FromInt(5))
+	fmt.Print(p, m)
 	// Output: 0.2 0
 }
 
 func ExampleFromInt_uint8() {
 	var x uint8 = 100
-	fmt.Print(fp.FromInt(x))
+	v := fp.FromInt(x)
+	fmt.Print(v)
 	// Output: 100
 }
 
 func ExampleFromInt_int8() {
 	var x int8 = -100
-	fmt.Print(fp.FromInt(x))
+	v := fp.FromInt(x)
+	fmt.Print(v)
 	// Output: -100
 }
 
 func ExampleFromInt_int() {
 	var x int = -100
-	fmt.Print(fp.FromInt(x))
+	v := fp.FromInt(x)
+	fmt.Print(v)
 	// Output: -100
 }
 
 func ExampleFromInt_uint() {
 	var x uint = 100
-	fmt.Print(fp.FromInt(x))
+	v := fp.FromInt(x)
+	fmt.Print(v)
 	// Output: 100
+}
+
+func ExampleMin() {
+	min := fp.Min(fp.FromInt(100), fp.FromFloat(0.999), fp.FromFloat(100.001))
+	fmt.Print(min)
+	// Output: 0.999
+}
+
+func ExampleMin_empty() {
+	defer func() { fmt.Print(recover()) }()
+	fp.Min()
+	// Output: min of empty set is undefined
+}
+
+func ExampleMax() {
+	max := fp.Max(fp.FromInt(100), fp.FromFloat(0.999), fp.FromFloat(100.001))
+	fmt.Print(max)
+	// Output: 100.001
+}
+
+func ExampleMax_empty() {
+	defer func() { fmt.Print(recover()) }()
+	fp.Max()
+	// Output: max of empty set is undefined
 }
 
 func BenchmarkArithmetic(b *testing.B) {

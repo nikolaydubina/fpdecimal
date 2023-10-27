@@ -27,7 +27,20 @@ func FromFloat[T float32 | float64](v T) Decimal {
 	return Decimal{int64(float64(v) * float64(multipliers[FractionDigits]))}
 }
 
+// FromIntScaled expects value already scaled to minor units
 func FromIntScaled[T integer](v T) Decimal { return Decimal{int64(v)} }
+
+func FromString(s string) (Decimal, error) {
+	v, err := ParseFixedPointDecimal([]byte(s), FractionDigits)
+	return Decimal{v}, err
+}
+
+func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
+	v.v, err = ParseFixedPointDecimal(b, FractionDigits)
+	return err
+}
+
+func (v Decimal) MarshalJSON() ([]byte, error) { return []byte(v.String()), nil }
 
 func (a Decimal) Scaled() int64 { return a.v }
 
@@ -69,14 +82,28 @@ func (a Decimal) Compare(b Decimal) int {
 	return 0
 }
 
-func FromString(s string) (Decimal, error) {
-	v, err := ParseFixedPointDecimal([]byte(s), FractionDigits)
-	return Decimal{v}, err
+func Min(vs ...Decimal) Decimal {
+	if len(vs) == 0 {
+		panic("min of empty set is undefined")
+	}
+	var v Decimal = vs[0]
+	for _, q := range vs {
+		if q.LessThan(v) {
+			v = q
+		}
+	}
+	return v
 }
 
-func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
-	v.v, err = ParseFixedPointDecimal(b, FractionDigits)
-	return err
+func Max(vs ...Decimal) Decimal {
+	if len(vs) == 0 {
+		panic("max of empty set is undefined")
+	}
+	var v Decimal = vs[0]
+	for _, q := range vs {
+		if q.GreaterThan(v) {
+			v = q
+		}
+	}
+	return v
 }
-
-func (v Decimal) MarshalJSON() ([]byte, error) { return []byte(v.String()), nil }
