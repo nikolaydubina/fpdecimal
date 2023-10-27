@@ -1,3 +1,7 @@
+<p align="center">
+<img width="300" height="300" src="https://github.com/nikolaydubina/fpdecimal/assets/2933061/e1febb03-a0f0-4626-a2e0-30a1bee500c7">
+</p>
+
 # 🛫 Fixed-Point Decimals
 
 > To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
