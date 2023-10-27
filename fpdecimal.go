@@ -10,22 +10,24 @@ type Decimal struct{ v int64 }
 
 var Zero = Decimal{}
 
-var multipliers = []int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000}
+var multipliers = [...]int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000}
+
+type integer interface {
+	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64
+}
 
 // FractionDigits that operations will use.
 // Warning, after change, existing variables are not updated.
 // Likely you want to use this once per runtime and in `func init()`.
 var FractionDigits uint8 = 3
 
-func FromInt[T ~int | ~int8 | ~int16 | ~int32 | ~int64](v T) Decimal {
-	return Decimal{int64(v) * multipliers[FractionDigits]}
-}
+func FromInt[T integer](v T) Decimal { return Decimal{int64(v) * multipliers[FractionDigits]} }
 
-func FromFloat[T ~float32 | ~float64](v T) Decimal {
+func FromFloat[T float32 | float64](v T) Decimal {
 	return Decimal{int64(float64(v) * float64(multipliers[FractionDigits]))}
 }
 
-func FromIntScaled[T ~int | ~int8 | ~int16 | ~int32 | ~int64](v T) Decimal { return Decimal{int64(v)} }
+func FromIntScaled[T integer](v T) Decimal { return Decimal{int64(v)} }
 
 func (a Decimal) Scaled() int64 { return a.v }
 
@@ -43,11 +45,9 @@ func (a Decimal) Mul(b Decimal) Decimal { return Decimal{v: a.v * b.v / multipli
 
 func (a Decimal) Div(b Decimal) Decimal { return Decimal{v: a.v * multipliers[FractionDigits] / b.v} }
 
-func (a Decimal) DivMod(b Decimal) (part, remainder Decimal) {
-	// reduce divisor to avoid overflow of a at larger values
-	k := b.v / multipliers[FractionDigits]
-	return Decimal{v: a.v / k}, Decimal{v: a.v % k}
-}
+func (a Decimal) Mod(b Decimal) Decimal { return Decimal{v: a.v % (b.v / multipliers[FractionDigits])} }
+
+func (a Decimal) DivMod(b Decimal) (part, remainder Decimal) { return a.Div(b), a.Mod(b) }
 
 func (a Decimal) Equal(b Decimal) bool { return a.v == b.v }
 
