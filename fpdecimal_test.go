@@ -12,6 +12,8 @@ import (
 	fp "github.com/nikolaydubina/fpdecimal"
 )
 
+var multipliers = [...]int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000}
+
 func FuzzArithmetics(f *testing.F) {
 	tests := [][2]int64{
 		{1, 2},
@@ -69,10 +71,10 @@ func FuzzArithmetics(f *testing.F) {
 				t.Error(p, pdiv)
 			}
 			if p != fp.FromIntScaled(a/b) {
-				t.Error(a, b, p, r, a/b)
+				t.Error(a, b, p, a/b)
 			}
-			if r != fp.FromIntScaled(a%b) {
-				t.Error(a, b, p, r, a%b)
+			if fr := fp.FromIntScaled(a % b); r != fr {
+				t.Error("Mod", "a", a, "b", b, "got", fr, "want", r)
 			}
 		}
 	})
@@ -175,11 +177,11 @@ func FuzzToFloat(f *testing.F) {
 		a := fp.FromFloat(v)
 
 		if float32(v) != a.Float32() {
-			t.Error(a, a.Float32(), float32(v))
+			t.Error("a", a, "a.f32", a.Float32(), "f32.v", float32(v))
 		}
 
 		if v != a.Float64() {
-			t.Error(a, a.Float32(), v)
+			t.Error("a", a, "a.f32", a.Float32(), "v", v)
 		}
 	})
 }
@@ -464,20 +466,91 @@ func ExampleDecimal_skip_trailing_zeros() {
 	// Output: 102.002
 }
 
-func ExampleDecimal_Div_remainder() {
+func ExampleDecimal_Div() {
 	x, _ := fp.FromString("1.000")
-
-	a, r := x.DivMod(fp.FromInt(3))
-	fmt.Println(a, r)
-	// Output: 0.333 0.001
+	p := x.Div(fp.FromInt(3))
+	fmt.Print(p)
+	// Output: 0.333
 }
 
 func ExampleDecimal_Div_whole() {
 	x, _ := fp.FromString("1.000")
+	p := x.Div(fp.FromInt(5))
+	fmt.Print(p)
+	// Output: 0.2
+}
 
-	a, r := x.DivMod(fp.FromInt(5))
-	fmt.Println(a, r)
+func ExampleDecimal_Mod() {
+	x, _ := fp.FromString("1.000")
+	m := x.Mod(fp.FromInt(3))
+	fmt.Print(m)
+	// Output: 0.001
+}
+
+func ExampleDecimal_DivMod() {
+	x, _ := fp.FromString("1.000")
+	p, m := x.DivMod(fp.FromInt(3))
+	fmt.Print(p, m)
+	// Output: 0.333 0.001
+}
+
+func ExampleDecimal_DivMod_whole() {
+	x, _ := fp.FromString("1.000")
+	p, m := x.DivMod(fp.FromInt(5))
+	fmt.Print(p, m)
 	// Output: 0.2 0
+}
+
+func ExampleFromInt_uint8() {
+	var x uint8 = 100
+	v := fp.FromInt(x)
+	fmt.Print(v)
+	// Output: 100
+}
+
+func ExampleFromInt_int8() {
+	var x int8 = -100
+	v := fp.FromInt(x)
+	fmt.Print(v)
+	// Output: -100
+}
+
+func ExampleFromInt_int() {
+	var x int = -100
+	v := fp.FromInt(x)
+	fmt.Print(v)
+	// Output: -100
+}
+
+func ExampleFromInt_uint() {
+	var x uint = 100
+	v := fp.FromInt(x)
+	fmt.Print(v)
+	// Output: 100
+}
+
+func ExampleMin() {
+	min := fp.Min(fp.FromInt(100), fp.FromFloat(0.999), fp.FromFloat(100.001))
+	fmt.Print(min)
+	// Output: 0.999
+}
+
+func ExampleMin_empty() {
+	defer func() { fmt.Print(recover()) }()
+	fp.Min()
+	// Output: min of empty set is undefined
+}
+
+func ExampleMax() {
+	max := fp.Max(fp.FromInt(100), fp.FromFloat(0.999), fp.FromFloat(100.001))
+	fmt.Print(max)
+	// Output: 100.001
+}
+
+func ExampleMax_empty() {
+	defer func() { fmt.Print(recover()) }()
+	fp.Max()
+	// Output: max of empty set is undefined
 }
 
 func BenchmarkArithmetic(b *testing.B) {
@@ -541,21 +614,21 @@ func TestSetFractionDigits(t *testing.T) {
 
 	t.Run("default 3", func(t *testing.T) {
 		if a, err := fp.FromString("1.123"); a.String() != "1.123" || err != nil {
-			t.Error("SetFractionDigits", a.String())
+			t.Error("SetFractionDigits", a)
 		}
 	})
 
 	t.Run("5", func(t *testing.T) {
 		fp.FractionDigits = 5
 		if a, err := fp.FromString("1.123456"); a.String() != "1.12345" || err != nil {
-			t.Error("SetFractionDigits 5", a.String())
+			t.Error("SetFractionDigits 5", a)
 		}
 	})
 
 	t.Run("10", func(t *testing.T) {
 		fp.FractionDigits = 10
 		if a, err := fp.FromString("1.12345678910"); a.String() != "1.1234567891" || err != nil {
-			t.Error("SetFractionDigits 10", a.String())
+			t.Error("SetFractionDigits 10", a)
 		}
 	})
 }
