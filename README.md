@@ -1,5 +1,8 @@
 # Fixed-Point Decimals
 
+> [!CAUTION]
+> DO NOT initialize package level constants if you are modifying `FractionDigits`. Variables may be initialized with different scaling factor depending on where `init()` call happens.
+
 > To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
 
 > _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
