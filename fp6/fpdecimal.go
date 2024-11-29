@@ -1,42 +1,40 @@
-package fpdecimal
+package fp6
 
-// Decimal is a decimal with fixed number of fraction digits.
-// By default, uses 3 fractional digits.
-// For example, values with 3 fractional digits will fit in ~9 quadrillion.
+import "github.com/nikolaydubina/fpdecimal"
+
+// Decimal with 6 fractional digits.
 // Fractions lower than that are discarded in operations.
-// Max: +9223372036854775.807
-// Min: -9223372036854775.808
+// Max: +9223372036854.775807
+// Min: -9223372036854.775808
 type Decimal struct{ v int64 }
 
 var Zero = Decimal{}
-
-var multipliers = [...]int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000}
 
 type integer interface {
 	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64
 }
 
-// FractionDigits that operations will use.
-// Warning, after change, existing variables are not updated.
-// Likely you want to use this once per runtime and in `func init()`.
-var FractionDigits uint8 = 3
+const (
+	fractionDigits = 6
+	multiplier     = 1_000_000
+)
 
-func FromInt[T integer](v T) Decimal { return Decimal{int64(v) * multipliers[FractionDigits]} }
+func FromInt[T integer](v T) Decimal { return Decimal{int64(v) * multiplier} }
 
 func FromFloat[T float32 | float64](v T) Decimal {
-	return Decimal{int64(float64(v) * float64(multipliers[FractionDigits]))}
+	return Decimal{int64(float64(v) * float64(multiplier))}
 }
 
 // FromIntScaled expects value already scaled to minor units
 func FromIntScaled[T integer](v T) Decimal { return Decimal{int64(v)} }
 
 func FromString(s string) (Decimal, error) {
-	v, err := ParseFixedPointDecimal([]byte(s), FractionDigits)
+	v, err := fpdecimal.ParseFixedPointDecimal([]byte(s), fractionDigits)
 	return Decimal{v}, err
 }
 
 func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
-	v.v, err = ParseFixedPointDecimal(b, FractionDigits)
+	v.v, err = fpdecimal.ParseFixedPointDecimal(b, fractionDigits)
 	return err
 }
 
@@ -44,21 +42,21 @@ func (v Decimal) MarshalJSON() ([]byte, error) { return []byte(v.String()), nil 
 
 func (a Decimal) Scaled() int64 { return a.v }
 
-func (a Decimal) Float32() float32 { return float32(a.v) / float32(multipliers[FractionDigits]) }
+func (a Decimal) Float32() float32 { return float32(a.v) / float32(multiplier) }
 
-func (a Decimal) Float64() float64 { return float64(a.v) / float64(multipliers[FractionDigits]) }
+func (a Decimal) Float64() float64 { return float64(a.v) / float64(multiplier) }
 
-func (a Decimal) String() string { return FixedPointDecimalToString(a.v, FractionDigits) }
+func (a Decimal) String() string { return fpdecimal.FixedPointDecimalToString(a.v, fractionDigits) }
 
 func (a Decimal) Add(b Decimal) Decimal { return Decimal{v: a.v + b.v} }
 
 func (a Decimal) Sub(b Decimal) Decimal { return Decimal{v: a.v - b.v} }
 
-func (a Decimal) Mul(b Decimal) Decimal { return Decimal{v: a.v * b.v / multipliers[FractionDigits]} }
+func (a Decimal) Mul(b Decimal) Decimal { return Decimal{v: a.v * b.v / multiplier} }
 
-func (a Decimal) Div(b Decimal) Decimal { return Decimal{v: a.v * multipliers[FractionDigits] / b.v} }
+func (a Decimal) Div(b Decimal) Decimal { return Decimal{v: a.v * multiplier / b.v} }
 
-func (a Decimal) Mod(b Decimal) Decimal { return Decimal{v: a.v % (b.v / multipliers[FractionDigits])} }
+func (a Decimal) Mod(b Decimal) Decimal { return Decimal{v: a.v % (b.v / multiplier)} }
 
 func (a Decimal) DivMod(b Decimal) (part, remainder Decimal) { return a.Div(b), a.Mod(b) }
 

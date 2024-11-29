@@ -1,4 +1,4 @@
-package fpdecimal_test
+package fp6_test
 
 import (
 	"encoding/json"
@@ -9,10 +9,10 @@ import (
 	"testing"
 	"unsafe"
 
-	fp "github.com/nikolaydubina/fpdecimal"
+	fp "github.com/nikolaydubina/fpdecimal/fp6"
 )
 
-var multipliers = [...]int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000}
+const multiplier = 1_000_000
 
 func FuzzArithmetics(f *testing.F) {
 	tests := [][2]int64{
@@ -104,11 +104,11 @@ func FuzzParse_StringSameAsFloat(f *testing.F) {
 		f.Add(-tc)
 	}
 	f.Fuzz(func(t *testing.T, r float64) {
-		if r > math.MaxInt64/1000 || r < math.MinInt64/1000 {
+		if r > math.MaxInt64/multiplier || r < math.MinInt64/multiplier {
 			t.Skip()
 		}
 
-		s := fmt.Sprintf("%.3f", r)
+		s := fmt.Sprintf("%.6f", r)
 		rs, _ := strconv.ParseFloat(s, 64)
 
 		v, err := fp.FromString(s)
@@ -116,7 +116,7 @@ func FuzzParse_StringSameAsFloat(f *testing.F) {
 			t.Error(err)
 		}
 
-		if s == "-0.000" || s == "0.000" || rs == 0 || rs == -0 || (rs > -0.001 && rs < 0.001) {
+		if s == "-0.000000" || s == "0.000000" || rs == 0 || rs == -0 || (rs > -0.000001 && rs < 0.000001) {
 			if v.String() != "0" {
 				t.Errorf("s('0') != Decimal.String(%#v) of fp3(%#v) float32(%#v) .3f-float32(%#v)", v.String(), v, r, s)
 			}
@@ -166,8 +166,9 @@ func FuzzToFloat(f *testing.F) {
 	tests := []float64{
 		0,
 		0.001,
+		0.000001,
 		1,
-		123.456,
+		123.000456,
 	}
 	for _, tc := range tests {
 		f.Add(tc)
@@ -190,8 +191,9 @@ func FuzzScaled(f *testing.F) {
 	tests := []float64{
 		0,
 		0.001,
+		0.000001,
 		1,
-		123.456,
+		123.000456,
 	}
 	for _, tc := range tests {
 		f.Add(tc)
@@ -200,8 +202,8 @@ func FuzzScaled(f *testing.F) {
 	f.Fuzz(func(t *testing.T, v float64) {
 		a := fp.FromFloat(v)
 
-		if int64(v*1000) != a.Scaled() {
-			t.Error(a, a.Scaled(), int64(v*1000))
+		if int64(v*multiplier) != a.Scaled() {
+			t.Error(a, a.Scaled(), int64(v*multiplier))
 		}
 	})
 }
@@ -214,6 +216,7 @@ var floatsForTests = []struct {
 		name: "small",
 		vals: []string{
 			"123.456",
+			"123.000456",
 			"0.123",
 			"0.012",
 			"0.001",
@@ -227,8 +230,8 @@ var floatsForTests = []struct {
 	{
 		name: "large",
 		vals: []string{
-			"123123123112312.1232",
-			"5341320482340234.123",
+			"123123123112312.001232",
+			"5341320482340234.000123",
 		},
 	},
 }
@@ -320,9 +323,9 @@ func TestUnmarshalJSON(t *testing.T) {
 		s    string
 	}{
 		{
-			json: `{"tesla-stock-price": 9000.001}`,
-			v:    fp.FromFloat(9000.001),
-			s:    `9000.001`,
+			json: `{"tesla-stock-price": 9000.000001}`,
+			v:    fp.FromFloat(9000.000001),
+			s:    `9000.000001`,
 		},
 	}
 	for _, tc := range tests {
@@ -346,7 +349,7 @@ func TestUMarshalJSON(t *testing.T) {
 
 	t.Run("when nil struct, then error", func(t *testing.T) {
 		var v *MyType
-		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), v)
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.000001}`), v)
 		if err == nil {
 			t.Error("expected error")
 		}
@@ -354,14 +357,14 @@ func TestUMarshalJSON(t *testing.T) {
 
 	t.Run("when nil value, then error", func(t *testing.T) {
 		var v *fp.Decimal
-		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), &v)
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.000001}`), &v)
 		if err == nil {
 			t.Error("expected error")
 		}
 	})
 
 	t.Run("when nil const of type, then error", func(t *testing.T) {
-		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), (*fp.Decimal)(nil))
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.000001}`), (*fp.Decimal)(nil))
 		if err == nil {
 			t.Error("expected error")
 		}
@@ -369,11 +372,11 @@ func TestUMarshalJSON(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		var v MyType
-		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.001}`), &v)
+		err := json.Unmarshal([]byte(`{"tesla-stock-price": 9000.000001}`), &v)
 		if err != nil {
 			t.Error(err)
 		}
-		e := MyType{fp.FromIntScaled(9000001)}
+		e := MyType{fp.FromIntScaled(9000000001)}
 		if v != e {
 			t.Error(v)
 		}
@@ -391,13 +394,14 @@ func FuzzJSON(f *testing.F) {
 		1.1,
 		0.123,
 		0.0123,
+		0.000123,
 	}
 	for _, tc := range tests {
 		f.Add(tc)
 		f.Add(-tc)
 	}
 	f.Fuzz(func(t *testing.T, v float32) {
-		if v > math.MaxInt64/1000 || v < math.MinInt64/1000 {
+		if v > math.MaxInt64/multiplier || v < math.MinInt64/multiplier {
 			t.Skip()
 		}
 
@@ -411,7 +415,7 @@ func FuzzJSON(f *testing.F) {
 			t.Error(err, s)
 		}
 
-		if b == "-0.000" || b == "0.000" || rs == 0 || rs == -0 || (rs > 0.001 && rs < 0.001) {
+		if b == "-0.000000" || b == "0.000000" || rs == 0 || rs == -0 || (rs > 0.000001 && rs < 0.000001) {
 			if x.A.String() != "0" {
 				t.Error(b, x)
 			}
@@ -435,7 +439,7 @@ func FuzzJSON(f *testing.F) {
 func ExampleDecimal() {
 	var BuySP500Price = fp.FromInt(9000)
 
-	input := []byte(`{"sp500": 9000.023}`)
+	input := []byte(`{"sp500": 9000.000023}`)
 
 	type Stocks struct {
 		SP500 fp.Decimal `json:"sp500"`
@@ -451,51 +455,51 @@ func ExampleDecimal() {
 	}
 
 	fmt.Println(amountToBuy)
-	// Output: 18000.046
+	// Output: 18000.000046
 }
 
 func ExampleDecimal_skip_whole_fraction() {
-	v, _ := fp.FromString("1013.0000")
+	v, _ := fp.FromString("1013.0000000")
 	fmt.Println(v)
 	// Output: 1013
 }
 
 func ExampleDecimal_skip_trailing_zeros() {
-	v, _ := fp.FromString("102.0020")
+	v, _ := fp.FromString("102.0000020")
 	fmt.Println(v)
-	// Output: 102.002
+	// Output: 102.000002
 }
 
 func ExampleDecimal_Div() {
-	x, _ := fp.FromString("1.000")
+	x, _ := fp.FromString("1.000000")
 	p := x.Div(fp.FromInt(3))
 	fmt.Print(p)
-	// Output: 0.333
+	// Output: 0.333333
 }
 
 func ExampleDecimal_Div_whole() {
-	x, _ := fp.FromString("1.000")
+	x, _ := fp.FromString("1.000000")
 	p := x.Div(fp.FromInt(5))
 	fmt.Print(p)
 	// Output: 0.2
 }
 
 func ExampleDecimal_Mod() {
-	x, _ := fp.FromString("1.000")
+	x, _ := fp.FromString("1.000000")
 	m := x.Mod(fp.FromInt(3))
 	fmt.Print(m)
-	// Output: 0.001
+	// Output: 0.000001
 }
 
 func ExampleDecimal_DivMod() {
-	x, _ := fp.FromString("1.000")
+	x, _ := fp.FromString("1.000000")
 	p, m := x.DivMod(fp.FromInt(3))
 	fmt.Print(p, m)
-	// Output: 0.333 0.001
+	// Output: 0.333333 0.000001
 }
 
 func ExampleDecimal_DivMod_whole() {
-	x, _ := fp.FromString("1.000")
+	x, _ := fp.FromString("1.000000")
 	p, m := x.DivMod(fp.FromInt(5))
 	fmt.Print(p, m)
 	// Output: 0.2 0
@@ -530,9 +534,9 @@ func ExampleFromInt_uint() {
 }
 
 func ExampleMin() {
-	min := fp.Min(fp.FromInt(100), fp.FromFloat(0.999), fp.FromFloat(100.001))
+	min := fp.Min(fp.FromInt(100), fp.FromFloat(0.999999), fp.FromFloat(100.000001))
 	fmt.Print(min)
-	// Output: 0.999
+	// Output: 0.999999
 }
 
 func ExampleMin_empty() {
@@ -542,9 +546,9 @@ func ExampleMin_empty() {
 }
 
 func ExampleMax() {
-	max := fp.Max(fp.FromInt(100), fp.FromFloat(0.999), fp.FromFloat(100.001))
+	max := fp.Max(fp.FromInt(100), fp.FromFloat(0.999999), fp.FromFloat(100.000001))
 	fmt.Print(max)
-	// Output: 100.001
+	// Output: 100.000001
 }
 
 func ExampleMax_empty() {
@@ -596,39 +600,15 @@ func TestDecimalMemoryLayout(t *testing.T) {
 }
 
 func TestDecimal_Compare(t *testing.T) {
-	a, _ := fp.FromString("1.123")
+	a, _ := fp.FromString("1.000123")
 
-	if b, _ := fp.FromString("1.122"); a.Compare(b) != 1 {
+	if b, _ := fp.FromString("1.000122"); a.Compare(b) != 1 {
 		t.Error(a, ">", b)
 	}
-	if b, _ := fp.FromString("1.124"); a.Compare(b) != -1 {
+	if b, _ := fp.FromString("1.000124"); a.Compare(b) != -1 {
 		t.Error(a, "<", b)
 	}
-	if b, _ := fp.FromString("1.123"); a.Compare(b) != 0 {
+	if b, _ := fp.FromString("1.000123"); a.Compare(b) != 0 {
 		t.Error(a, "==", b)
 	}
-}
-
-func TestSetFractionDigits(t *testing.T) {
-	defer func() { fp.FractionDigits = 3 }()
-
-	t.Run("default 3", func(t *testing.T) {
-		if a, err := fp.FromString("1.123"); a.String() != "1.123" || err != nil {
-			t.Error("SetFractionDigits", a)
-		}
-	})
-
-	t.Run("5", func(t *testing.T) {
-		fp.FractionDigits = 5
-		if a, err := fp.FromString("1.123456"); a.String() != "1.12345" || err != nil {
-			t.Error("SetFractionDigits 5", a)
-		}
-	})
-
-	t.Run("10", func(t *testing.T) {
-		fp.FractionDigits = 10
-		if a, err := fp.FromString("1.12345678910"); a.String() != "1.1234567891" || err != nil {
-			t.Error("SetFractionDigits 10", a)
-		}
-	})
 }
