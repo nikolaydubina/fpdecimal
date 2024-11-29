@@ -40,6 +40,13 @@ func (v *Decimal) UnmarshalJSON(b []byte) (err error) {
 
 func (v Decimal) MarshalJSON() ([]byte, error) { return []byte(v.String()), nil }
 
+func (v *Decimal) UnmarshalText(b []byte) (err error) {
+	v.v, err = fpdecimal.ParseFixedPointDecimal(b, fractionDigits)
+	return err
+}
+
+func (v Decimal) MarshalText() ([]byte, error) { return []byte(v.String()), nil }
+
 func (a Decimal) Scaled() int64 { return a.v }
 
 func (a Decimal) Float32() float32 { return float32(a.v) / float32(multiplier) }
