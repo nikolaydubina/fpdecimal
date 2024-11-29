@@ -30,8 +30,8 @@ jobs:
       - name: Fuzz
         run: |
           go test -list . | grep Fuzz | xargs -P 8 -I {} go test -fuzz {} -fuzztime 5s .
-          cd fp3; go test -list . | grep Fuzz | xargs -P 8 -I {} go test -fuzz {} -fuzztime 5s .
-          cd fp6; go test -list . | grep Fuzz | xargs -P 8 -I {} go test -fuzz {} -fuzztime 5s .
+          cd fp3; go test -list . | grep Fuzz | xargs -P 8 -I {} go test -fuzz {} -fuzztime 5s . ; cd ..
+          cd fp6; go test -list . | grep Fuzz | xargs -P 8 -I {} go test -fuzz {} -fuzztime 5s . ; cd ..
 
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1
