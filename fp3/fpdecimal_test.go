@@ -1,4 +1,4 @@
-package fpdecimal_test
+package fp3_test
 
 import (
 	"encoding/json"
@@ -9,10 +9,8 @@ import (
 	"testing"
 	"unsafe"
 
-	fp "github.com/nikolaydubina/fpdecimal"
+	fp "github.com/nikolaydubina/fpdecimal/fp3"
 )
-
-var multipliers = [...]int64{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000}
 
 func FuzzArithmetics(f *testing.F) {
 	tests := [][2]int64{
@@ -108,6 +106,11 @@ func FuzzParse_StringSameAsFloat(f *testing.F) {
 			t.Skip()
 		}
 
+		// gaps start around these floats
+		if r > 100_000_000 || r < -100_000_000 {
+			t.Skip()
+		}
+
 		s := fmt.Sprintf("%.3f", r)
 		rs, _ := strconv.ParseFloat(s, 64)
 
@@ -176,12 +179,8 @@ func FuzzToFloat(f *testing.F) {
 	f.Fuzz(func(t *testing.T, v float64) {
 		a := fp.FromFloat(v)
 
-		if float32(v) != a.Float32() {
-			t.Error("a", a, "a.f32", a.Float32(), "f32.v", float32(v))
-		}
-
-		if v != a.Float64() {
-			t.Error("a", a, "a.f32", a.Float32(), "v", v)
+		if delta := math.Abs(v - a.Float64()); delta > 0.00100001 {
+			t.Error("a", a, "a.f64", a.Float64(), "v", v, "delta", delta)
 		}
 	})
 }
@@ -607,28 +606,4 @@ func TestDecimal_Compare(t *testing.T) {
 	if b, _ := fp.FromString("1.123"); a.Compare(b) != 0 {
 		t.Error(a, "==", b)
 	}
-}
-
-func TestSetFractionDigits(t *testing.T) {
-	defer func() { fp.FractionDigits = 3 }()
-
-	t.Run("default 3", func(t *testing.T) {
-		if a, err := fp.FromString("1.123"); a.String() != "1.123" || err != nil {
-			t.Error("SetFractionDigits", a)
-		}
-	})
-
-	t.Run("5", func(t *testing.T) {
-		fp.FractionDigits = 5
-		if a, err := fp.FromString("1.123456"); a.String() != "1.12345" || err != nil {
-			t.Error("SetFractionDigits 5", a)
-		}
-	})
-
-	t.Run("10", func(t *testing.T) {
-		fp.FractionDigits = 10
-		if a, err := fp.FromString("1.12345678910"); a.String() != "1.1234567891" || err != nil {
-			t.Error("SetFractionDigits 10", a)
-		}
-	})
 }
