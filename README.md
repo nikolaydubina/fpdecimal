@@ -1,8 +1,5 @@
 # Fixed-Point Decimals
 
-> [!CAUTION]
-> DO NOT initialize package level constants if you are modifying `FractionDigits`. Variables may be initialized with different scaling factor depending on where `init()` call happens.
-
 > To use in money, look at [github.com/nikolaydubina/fpmoney](https://github.com/nikolaydubina/fpmoney)
 
 > _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
@@ -290,3 +287,19 @@ BenchmarkParse/fromString/large-10                 257542226            23.23 ns
 BenchmarkParse/UnmarshalJSON/small-10              809793006             7.31 ns/op           0 B/op           0 allocs/op
 BenchmarkParse/UnmarshalJSON/large-10              272087984            22.04 ns/op           0 B/op           0 allocs/op
 ```
+
+## Appendix F: dynamic pkg level fraction digits
+
+This is very bug prone. In fact, this was observd in production, [issue](https://github.com/nikolaydubina/fpdecimal/issues/26).
+
+Consider:
+
+1. package A. init map with .FromInt
+2. package B imports A and sets in init() num fraction digits
+3. package B sees values in package A initialized with different fraction digits
+4. 💥
+
+Therefore, we are inlining fraction digits into most common fractions.
+
+- 3 is enough to represent all currencies
+- 6 is enough for 10cm x 10cm of (lat,long)
