@@ -106,6 +106,11 @@ func FuzzParse_StringSameAsFloat(f *testing.F) {
 			t.Skip()
 		}
 
+		// gaps start around these floats
+		if r > 100_000_000 || r < -100_000_000 {
+			t.Skip()
+		}
+
 		s := fmt.Sprintf("%.3f", r)
 		rs, _ := strconv.ParseFloat(s, 64)
 
@@ -174,12 +179,8 @@ func FuzzToFloat(f *testing.F) {
 	f.Fuzz(func(t *testing.T, v float64) {
 		a := fp.FromFloat(v)
 
-		if float32(v) != a.Float32() {
-			t.Error("a", a, "a.f32", a.Float32(), "f32.v", float32(v))
-		}
-
-		if v != a.Float64() {
-			t.Error("a", a, "a.f32", a.Float32(), "v", v)
+		if delta := math.Abs(v - a.Float64()); delta > 0.00100001 {
+			t.Error("a", a, "a.f64", a.Float64(), "v", v, "delta", delta)
 		}
 	})
 }

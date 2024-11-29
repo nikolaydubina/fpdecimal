@@ -38,12 +38,17 @@ func FuzzFixedPointDecimalToString_Fractions(f *testing.F) {
 			t.Skip()
 		}
 
+		// gaps start around these floats
+		if r > 100_000_000 || r < -100_000_000 {
+			t.Skip()
+		}
+
 		s := fmt.Sprintf("%.3f", r)
 		rs, _ := strconv.ParseFloat(s, 64)
 
 		v, err := fpdecimal.ParseFixedPointDecimal([]byte(s), 3)
 		if err != nil {
-			t.Errorf(err.Error())
+			t.Error(err.Error())
 		}
 
 		if s == "-0.000" || s == "0.000" || rs == 0 || rs == -0 || (rs > -0.001 && rs < 0.001) {
