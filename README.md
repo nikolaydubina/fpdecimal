@@ -302,4 +302,5 @@ Consider:
 Therefore, we are inlining fraction digits into most common fractions.
 
 - 3 is enough to represent all currencies
+- 3 is enough for SI units conversion ladder
 - 6 is enough for 10cm x 10cm of (lat,long)
