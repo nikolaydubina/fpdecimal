@@ -10,7 +10,7 @@ import (
 	"github.com/nikolaydubina/fpdecimal"
 )
 
-func FuzzFixedPointDecimalToString(f *testing.F) {
+func FuzzFixedPointDecimalToString_Fractions(f *testing.F) {
 	tests := []float64{
 		0,
 		0.100,
