@@ -5,7 +5,7 @@
 > _Be Precise. Using floats to represent currency is almost criminal. — Robert.C.Martin, "Clean Code" p.301_
 
 <p align="center">
-  ✨ Sponsored by <a href="https://apps.apple.com/app/id6738306589">NDX AI Shopping Assistant</a>
+  ✨ Sponsored by <a href="https://ndx.one/?ct=github">NDX Technologies</a>
 </p>
 
 [![codecov](https://codecov.io/gh/nikolaydubina/fpdecimal/branch/main/graph/badge.svg?token=0pf0P5qloX)](https://codecov.io/gh/nikolaydubina/fpdecimal)
